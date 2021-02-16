@@ -1,0 +1,11 @@
+[package]
+name = "cos_701"
+version = "0.1.0"
+authors = ["Ben Stringer <ben.stringer@usm.edu>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rand = "^0.8.3"
+plotters = "^0.3.0"

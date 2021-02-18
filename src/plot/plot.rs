@@ -2,6 +2,7 @@
 // use std::ops::Range;
 // use plotters::coord::types::RangedCoordf64;
 // use plotters::coord::Shift;
+// use std::borrow::Borrow;
 
 // /// One approach, pass in a closure that accepts the chart.
 // /// e.g.
@@ -84,5 +85,63 @@
 //         chart.configure_mesh().disable_mesh().draw()?;
 //
 //         Ok(Self { root, chart })
+//     }
+// }
+//
+// pub struct Plot<'a> {
+//     root: Root<'a>,
+//     chart: Option<ChartContext<'a, BitMapBackend<'a>, Cartesian2d<RangedCoordf64, RangedCoordf64>>>,
+// }
+//
+// impl<'a> Plot<'a> {
+//     /// Create a new plot
+//     ///
+//     /// # Arguments
+//     /// * `path` - path to the output file
+//     /// * `caption` - the text to caption the plot with
+//     /// * `xRange` - the range of the x-axis
+//     /// * `yRange` - the range of the y-axis
+//     pub fn new(path: &'static str) -> Result<Self, Box<dyn std::error::Error>> {
+//         //
+//         let root = Root::new(path)?;
+//
+//         Ok(Self { root, chart: None })
+//     }
+//
+//     pub fn build(
+//         &'a mut self,
+//         caption: &str,
+//         xRange: Range<f64>,
+//         yRange: Range<f64>,
+//     ) -> Result<(), Box<dyn std::error::Error>> {
+//         let mut chart = ChartBuilder::on(self.root.inner.borrow())
+//             .caption(caption, ("sans-serif", 50).into_font())
+//             .margin(16)
+//             .x_label_area_size(30)
+//             .y_label_area_size(30)
+//             .build_cartesian_2d(xRange, yRange)?;
+//         chart.configure_mesh().disable_mesh().draw()?;
+//         self.chart = Some(chart);
+//         Ok(())
+//     }
+//
+//     // pub fn get_chart(&self) -> &ChartContext<'a, BitMapBackend<'a>, Cartesian2d<RangedCoordf64, RangedCoordf64>> {
+//     //     self.chart.as_ref().unwrap()
+//     // }
+// }
+//
+// struct Root<'a> {
+//     inner: std::rc::Rc<DrawingArea<BitMapBackend<'a>, Shift>>,
+// }
+//
+// impl Root<'_> {
+//     pub fn new(path: &'static str) -> Result<Self, Box<dyn std::error::Error>> {
+//         let root = BitMapBackend::new(path, (640, 480)).into_drawing_area();
+//
+//         root.fill(&WHITE)?;
+//
+//         Ok(Self {
+//             inner: std::rc::Rc::new(root),
+//         })
 //     }
 // }

@@ -25,5 +25,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //         Ok(()
     //      });
 
+    // let mut rng = rng::uniform::Uniform701::new();
+    // let mut plot = plot::plot::Plot::new("test.png")?;
+    // plot.build("foo", 0f64..1f64, 0f64..1f64)?;
+    // plot.get_chart().draw_series((0..1000)
+    //     .map(|_| (rng.next(), rng.next()))
+    //     // .inspect(|coord| println!("{:?}", coord))
+    //     .map(|coord| Circle::new(coord, 1, &BLUE)))?;
+
+
     Ok(())
 }

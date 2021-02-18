@@ -1,11 +1,11 @@
 // use plotters::prelude::*;
 
-mod rng;
-mod plot;
 mod assignment;
+mod deranged;
+mod plot;
+mod rng;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-
     assignment::assignment1::do_assignment_1()?;
 
     // // The preferred approach, creating a plot object that keeps track of the chart
@@ -32,7 +32,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     .map(|_| (rng.next(), rng.next()))
     //     // .inspect(|coord| println!("{:?}", coord))
     //     .map(|coord| Circle::new(coord, 1, &BLUE)))?;
-
 
     Ok(())
 }

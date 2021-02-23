@@ -19,9 +19,6 @@ impl Uniform701 {
 
     /// Get the next random number uniformly distributed between 0..1
     pub fn next(&mut self) -> f64 {
-        let v = self.dst.sample(&mut self.rng);
-        assert!(v > 0f64, "Generated random was less than 0: {}", v);
-        assert!(v < 1f64, "Generated random was greater than 1: {}", v);
-        v
+        self.dst.sample(&mut self.rng)
     }
 }

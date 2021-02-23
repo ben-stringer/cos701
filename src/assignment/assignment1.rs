@@ -3,18 +3,23 @@ use std::collections::BTreeMap;
 
 use crate::rng::boxmuller::BoxMullerGaussian701;
 use crate::rng::clt_gaussian::CentralLimitTheoremGaussian701;
+use crate::rng::exponential::Exponential701;
 use crate::rng::uniform::Uniform701;
 use std::ops::Range;
 
 /// Entry-point for assignment 1
 pub fn do_assignment_1() -> Result<(), Box<dyn std::error::Error>> {
-    // println!("Generating a histogram using the uniform distribution");
+    println!("Generating a histogram using the uniform distribution");
     let mut uni = Uniform701::new();
-    // generate_uniform_histogram(&mut uni)?;
-    //
-    // println!("Generating a histogram using the Box-Müller method");
-    // let mut bm = BoxMullerGaussian701::new(&mut uni);
-    // generate_boxmuller_histogram(&mut bm)?;
+    generate_uniform_histogram(&mut uni)?;
+
+    println!("Generating a histogram using the exponential distribution");
+    let mut exp = Exponential701::new(&mut uni, 1.0, 1.0);
+    generate_exponential_histogram(&mut exp)?;
+
+    println!("Generating a histogram using the Box-Müller method");
+    let mut bm = BoxMullerGaussian701::new(&mut uni);
+    generate_boxmuller_histogram(&mut bm)?;
 
     println!("Generating a histogram using the central limit theorem method");
     let mut clt = CentralLimitTheoremGaussian701::new(&mut uni, 8);
@@ -37,6 +42,30 @@ fn generate_uniform_histogram(uni: &mut Uniform701) -> Result<(), Box<dyn std::e
     plot_histogram(
         "output/assignment1/uniform.png",
         "The Uniform Distribution, system supplied",
+        0_f64..1_f64,
+        0.001_f64,
+        bins,
+    )?;
+
+    Ok(())
+}
+
+/// Sample from the supplied exponential random number generator, bin the results, and plot the bins
+fn generate_exponential_histogram(
+    exp: &mut Exponential701,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let mut bins: BTreeMap<String, i32> = BTreeMap::new();
+
+    (0..1_000_000)
+        .map(|_| exp.next())
+        .map(|v| format!("{:0.3}", v))
+        .for_each(|k| {
+            bins.entry(k).and_modify(|v| *v += 1).or_insert(1);
+        });
+
+    plot_histogram(
+        "output/assignment1/exponential.png",
+        "Exponential distribution",
         0_f64..1_f64,
         0.001_f64,
         bins,

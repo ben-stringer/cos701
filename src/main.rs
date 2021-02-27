@@ -1,37 +1,70 @@
-// use plotters::prelude::*;
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
+#[allow(unused_imports)]
+use plotters::prelude::*;
 
 mod assignment;
 mod deranged;
 mod plot;
 mod rng;
 
+use crate::assignment::assignment1;
+use crate::assignment::assignment2;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    assignment::assignment1::do_assignment_1()?;
+    ensure_dirs()?;
 
-    // // The preferred approach, creating a plot object that keeps track of the chart
-    // let mut rng = crate::rng::uniform::Uniform701::new();
-    // let plot = plot::plot::Plot::new("example.png", "", 0f64..1f64, 0f64..1f64);
-    // // use functions exposed on the plot, not yet shown
+    assignment1::do_assignment_1()?;
+    assignment2::do_assignment_2()?;
 
-    // // An alternate option
-    // let rng = crate::rng::uniform::Uniform701::new();
-    // plot::plot::draw("example.png", "", 0f64..1f64, 0f64..1f64,
-    //      |chart| {
-    //          chart.draw_series(
-    //              (0..1000)
-    //                  .map(|_| (rng.next(),rng.next()))
-    //                  .inspect(|coord| println!("{:?}", coord))
-    //                  .map(|coord| Circle::new(coord, 1, &BLUE)))?;
-    //         Ok(()
-    //      });
-
-    // let mut rng = rng::uniform::Uniform701::new();
-    // let mut plot = plot::plot::Plot::new("test.png")?;
-    // plot.build("foo", 0f64..1f64, 0f64..1f64)?;
-    // plot.get_chart().draw_series((0..1000)
-    //     .map(|_| (rng.next(), rng.next()))
-    //     // .inspect(|coord| println!("{:?}", coord))
-    //     .map(|coord| Circle::new(coord, 1, &BLUE)))?;
-
+    // scratch()?;
     Ok(())
 }
+
+fn ensure_dirs() -> Result<(), Box<dyn std::error::Error>> {
+    std::fs::create_dir_all("output/scratch")?;
+    std::fs::create_dir_all("output/assignment1")?;
+    std::fs::create_dir_all("output/assignment2")?;
+    Ok(())
+}
+
+// fn scratch() -> Result<(), Box<dyn std::error::Error>> {
+//     let path = "output/scratch/scratch.png";
+//     let caption = "Scratch";
+//     // let x_range = -5_f64..5_f64;
+//     let x_range = 0.0..10.0;
+//     let y_range = -1.0..1.0;
+//     let x_step = 0.1;
+//     // let curve = (-5_f64..5_f64)
+//     //     .step(0.1)
+//     //     .key_points(1_000_000)
+//     //     .into_iter()
+//     //     .map(|x| x.powi(2));
+//
+//     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
+//     root.fill(&WHITE)?;
+//
+//     let mut chart = ChartBuilder::on(&root)
+//         .caption(caption, ("sans-serif", 50).into_font())
+//         .margin(16)
+//         .x_label_area_size(30)
+//         .y_label_area_size(30)
+//         // .build_cartesian_2d(x_range.step(x_step).into_segmented(), 0_f64..10_f64)?;
+//         .build_cartesian_2d(x_range, y_range)?;
+//     chart.configure_mesh().disable_mesh().draw()?;
+//
+//     chart.draw_series(LineSeries::new(
+//         (0..100).map(|x| x as f64 / 10.0).map(|x| (x, x.sin())),
+//         &BLACK,
+//     ))?;
+//     // chart.draw_series(LineSeries::new(
+//     //     x_range
+//     //         .step(x_step)
+//     //         .key_points(1_000_000)
+//     //         .into_iter()
+//     //         .map(|x| (x, x.powi(2))),
+//     //     &BLUE,
+//     // ))?;
+//     Ok(())
+// }

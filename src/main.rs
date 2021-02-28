@@ -1,31 +1,39 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-#[allow(unused_imports)]
-use plotters::prelude::*;
-
 mod assignment;
-mod deranged;
 mod plot;
 mod rng;
 
+#[allow(unused_imports)]
+use plotters::prelude::*;
+
+#[allow(unused_imports)]
 use crate::assignment::assignment1;
+#[allow(unused_imports)]
 use crate::assignment::assignment2;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    ensure_dirs()?;
+    println!("Hello world");
 
-    assignment1::do_assignment_1()?;
+    ensure_output_dirs_exist()?;
+
+    // assignment1::do_assignment_1()?;
+
     assignment2::do_assignment_2()?;
 
     // scratch()?;
+
     Ok(())
 }
 
-fn ensure_dirs() -> Result<(), Box<dyn std::error::Error>> {
-    std::fs::create_dir_all("output/scratch")?;
-    std::fs::create_dir_all("output/assignment1")?;
-    std::fs::create_dir_all("output/assignment2")?;
+fn ensure_output_dirs_exist() -> Result<(), Box<dyn std::error::Error>> {
+    println!("Creating output directories");
+
+    vec!["output/scratch", "output/assignment1", "output/assignment2"]
+        .into_iter()
+        .try_for_each(std::fs::create_dir_all)?;
+
     Ok(())
 }
 

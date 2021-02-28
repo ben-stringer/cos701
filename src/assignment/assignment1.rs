@@ -12,6 +12,8 @@ const NUM_POINTS: i32 = 1_000_000;
 
 /// Entry-point for assignment 1
 pub fn do_assignment_1() -> Result<(), Box<dyn std::error::Error>> {
+    println!("Doing assignment 1");
+
     let mut uni = Uniform701::new();
 
     println!("Generating a histogram using the uniform distribution");
@@ -26,12 +28,11 @@ pub fn do_assignment_1() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Generating a histogram using the exponential distribution");
     generate_exponential_histogram(&mut exp)?;
-    
+
     let mut clt = CentralLimitTheoremGaussian701::new(&mut uni, 8);
-    
+
     println!("Generating a histogram using the central limit theorem method");
     generate_clt_histogram(&mut clt)?;
-
 
     Ok(())
 }
@@ -78,6 +79,7 @@ fn generate_exponential_histogram(
         0_f64..1_f64,
         0.001_f64,
         bins,
+        None,
     )?;
 
     Ok(())

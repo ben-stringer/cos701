@@ -2,23 +2,23 @@
 #![allow(unused_variables)]
 
 mod assignment;
-mod plot;
 mod rng;
 
 #[allow(unused_imports)]
 use plotters::prelude::*;
+use std::error::Error;
 
 #[allow(unused_imports)]
 use crate::assignment::assignment1;
 #[allow(unused_imports)]
 use crate::assignment::assignment2;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn Error>> {
     println!("Hello world");
 
     ensure_output_dirs_exist()?;
 
-    // assignment1::do_assignment_1()?;
+    assignment1::do_assignment_1()?;
 
     assignment2::do_assignment_2()?;
 
@@ -27,7 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn ensure_output_dirs_exist() -> Result<(), Box<dyn std::error::Error>> {
+fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
     println!("Creating output directories");
 
     vec!["output/scratch", "output/assignment1", "output/assignment2"]
@@ -37,7 +37,7 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-// fn scratch() -> Result<(), Box<dyn std::error::Error>> {
+// fn scratch() -> Result<(), Box<dyn Error>> {
 //     let path = "output/scratch/scratch.png";
 //     let caption = "Scratch";
 //     // let x_range = -5_f64..5_f64;

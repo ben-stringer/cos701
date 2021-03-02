@@ -20,7 +20,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     assignment1::do_assignment_1()?;
 
-    assignment2::do_assignment_2()?;
+    // assignment2::do_assignment_2()?;
 
     // scratch()?;
 

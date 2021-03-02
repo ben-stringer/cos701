@@ -16,10 +16,10 @@ pub fn do_assignment_2() -> Result<(), Box<dyn Error>> {
     part_2a(&mut uni)?;
 
     println!("Doing part b");
-    part_2b(&mut uni)?;
+    part_2b(&mut uni, 500, 0.5)?;
 
     println!("Doing part c");
-    part_2c(&mut uni)?;
+    part_2c(&mut uni, 500, 2.0)?;
 
     Ok(())
 }
@@ -49,15 +49,15 @@ fn part_2a(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
 
 /// Modify the code in (2a) such that the minimum distance between any two random points is
 /// greater or equal to rmin. Choose n and rmin as 500 and 1.0, respectively, in your program.
-fn part_2b(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
-    let mut accepted: Vec<(f64, f64)> = Vec::with_capacity(500);
-    for _ in 0..200 {
+fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
+    let mut accepted: Vec<(f64, f64)> = Vec::with_capacity(n);
+    for _ in 0..n {
         let mut rejected = true;
         while rejected {
             let next = (uni.next() * L, uni.next() * L);
             if let None = (&accepted)
                 .into_iter()
-                .find(|point| distance_2d(**point, next) < 1.0)
+                .find(|point| distance_2d(**point, next) < r_min)
             {
                 accepted.push(next);
                 rejected = false;
@@ -66,7 +66,7 @@ fn part_2b(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
     }
     scatter_2d(
         "output/assignment2/part_2b.png",
-        "Assignment 2a, L = 20, n = 500, r_min = 1.0",
+        format!("Assignment 2b, L = 20, n = {}, r_min = {}", n, r_min).as_str(),
         0.0..L,
         0.0..L,
         accepted,
@@ -76,15 +76,15 @@ fn part_2b(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
 
 /// Repeat the computation in (2b) in three dimensions by changing rmin from 1 to 2.
 /// Show your results graphically.
-fn part_2c(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
-    let mut accepted: Vec<(f64, f64, f64)> = Vec::with_capacity(500);
-    for _ in 0..500 {
+fn part_2c(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
+    let mut accepted: Vec<(f64, f64, f64)> = Vec::with_capacity(n);
+    for _ in 0..n {
         let mut rejected = true;
         while rejected {
             let next = (uni.next() * L, uni.next() * L, uni.next() * L);
             if let None = (&accepted)
                 .into_iter()
-                .find(|point| distance_3d(**point, next) < 2.0)
+                .find(|point| distance_3d(**point, next) < r_min)
             {
                 accepted.push(next);
                 rejected = false;
@@ -94,7 +94,7 @@ fn part_2c(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
     // scatter_3d(
     animated_3d(
         "output/assignment2/part_2c.png",
-        "Assignment 2a, L = 20, n = 500, r_min = 2.0",
+        format!("Assignment 2c, L = 20, n = {}, r_min = {}", n, r_min).as_str(),
         0.0..L,
         0.0..L,
         0.0..L,
@@ -174,13 +174,14 @@ fn animated_3d(
     let root = BitMapBackend::gif(path, (1440, 900), 1_000)?.into_drawing_area();
 
     for i in 0..10 {
-        println!("Frame {}", i);
+        let frame = format!("Frame {}", i);
+        println!("{}", frame);
         let yaw = i as f64 * 0.2;
         root.fill(&WHITE)?;
 
         let mut chart = ChartBuilder::on(&root)
             .caption(
-                format!("{}, {:.1}", caption, yaw),
+                format!("{}, {}", caption, frame),
                 ("sans-serif", 50).into_font(),
             )
             .margin(32)

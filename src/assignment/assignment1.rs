@@ -20,14 +20,13 @@ pub fn do_assignment_1() -> Result<(), Box<dyn Error>> {
     println!("Generating a histogram using the uniform distribution");
     generate_uniform_histogram(&mut uni)?;
 
-    println!("Generating a histogram using the Box-Müller method");
-    let mut bm = BoxMullerGaussian701::new(&mut uni);
-    generate_boxmuller_histogram(&mut bm)?;
-
     println!("Generating a histogram using the exponential distribution");
     let mut exp = Exponential701::new(&mut uni, 1.0, 1.0);
     generate_exponential_histogram(&mut exp)?;
-    generate_exponential_histogram_with_scaling(&mut exp)?;
+
+    println!("Generating a histogram using the Box-Müller method");
+    let mut bm = BoxMullerGaussian701::new(&mut uni);
+    generate_boxmuller_histogram(&mut bm)?;
 
     println!("Generating a histogram using the central limit theorem method");
     let mut clt = CentralLimitTheoremGaussian701::new(&mut uni, 8);
@@ -77,63 +76,13 @@ fn generate_exponential_histogram(exp: &mut Exponential701) -> Result<(), Box<dy
     let max_y = bins.values().max().unwrap().to_owned() as f64;
 
     plot_histogram(
-        "output/assignment1/exponential_exact.png",
-        "Exponential distribution, exact results",
+        "output/assignment1/exponential.png",
+        "Exponential distribution",
         0.0..1.0,
         0.001,
         max_y,
         bins,
-        Some((
-            Box::new(|x| {
-                let y = 5200.0 * (-1.7 * x).exp();
-                if y > max_y {
-                    None
-                } else {
-                    Some((x, y))
-                }
-            }),
-            "",
-        )),
-    )?;
-
-    Ok(())
-}
-
-/// Sample from the supplied exponential random number generator, scaling the results so they
-/// lie between 0..1, bin the results, and plot the bins
-fn generate_exponential_histogram_with_scaling(
-    exp: &mut Exponential701,
-) -> Result<(), Box<dyn Error>> {
-    let mut bins: BTreeMap<String, i32> = BTreeMap::new();
-
-    (0..1_000_000)
-        .map(|_| exp.next())
-        .map(|v| (v - 0.368) * (1.0 / 0.632))
-        .map(|v| format!("{:0.3}", v))
-        .for_each(|k| {
-            bins.entry(k).and_modify(|v| *v += 1).or_insert(1);
-        });
-
-    let max_y = bins.values().max().unwrap().to_owned() as f64;
-
-    plot_histogram(
-        "output/assignment1/exponential_scaled.png",
-        "Exponential distribution, Scaled",
-        0.0..1.0,
-        0.001,
-        max_y,
-        bins,
-        Some((
-            Box::new(|x| {
-                let y = 1700.0 * (-1.0 * x).exp();
-                if y > max_y {
-                    None
-                } else {
-                    Some((x, y))
-                }
-            }),
-            "",
-        )),
+        None,
     )?;
 
     Ok(())
@@ -255,25 +204,24 @@ fn plot_histogram<'a>(
             .y_label_area_size(32)
             .build_cartesian_2d(x_range.to_owned(), 0.0..max_y)?;
         chart.configure_mesh().disable_mesh().draw()?;
-        chart
-            .draw_series(LineSeries::new(
-                x_range
-                    .to_owned()
-                    .step(x_step)
-                    .key_points(1_000_000)
-                    .into_iter()
-                    .map(curve_fn)
-                    .filter(|o| o.is_some())
-                    .map(|o| o.unwrap()),
-                &BLUE,
-            ))?
-            .label(curve_label)
-            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
-        chart
-            .configure_series_labels()
-            .border_style(&BLACK)
-            .background_style(&WHITE.mix(0.8))
-            .draw()?;
+        chart.draw_series(LineSeries::new(
+            x_range
+                .to_owned()
+                .step(x_step)
+                .key_points(1_000_000)
+                .into_iter()
+                .map(curve_fn)
+                .filter(|o| o.is_some())
+                .map(|o| o.unwrap()),
+            &BLUE,
+        ))?;
+        // .label(curve_label)
+        // .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
+        // chart
+        //     .configure_series_labels()
+        //     .border_style(&BLACK)
+        //     .background_style(&WHITE.mix(0.8))
+        //     .draw()?;
     }
 
     println!("Done drawing '{}'", caption);

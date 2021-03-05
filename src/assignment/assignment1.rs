@@ -4,6 +4,7 @@ use std::collections::BTreeMap;
 use crate::rng::boxmuller::BoxMullerGaussian701;
 use crate::rng::clt_gaussian::CentralLimitTheoremGaussian701;
 use crate::rng::exponential::Exponential701;
+use crate::rng::inverse_transform::InverseTransform701;
 use crate::rng::uniform::Uniform701;
 use std::error::Error;
 use std::f64::consts::PI;
@@ -31,6 +32,10 @@ pub fn do_assignment_1() -> Result<(), Box<dyn Error>> {
     println!("Generating a histogram using the central limit theorem method");
     let mut clt = CentralLimitTheoremGaussian701::new(&mut uni, 8);
     generate_clt_histogram(&mut clt)?;
+
+    println!("Generating a histogram using the inverse transform method");
+    let mut inv = InverseTransform701::new(&mut uni, 1.0);
+    generate_inv_trans(&mut inv)?;
 
     Ok(())
 }
@@ -82,7 +87,15 @@ fn generate_exponential_histogram(exp: &mut Exponential701) -> Result<(), Box<dy
         0.001,
         max_y,
         bins,
-        None,
+        Some((
+            Box::new(|x| {
+                let sigma: f64 = 1.0;
+                let a = 1.0 / (2.0 * PI * sigma.powf(2.0)).sqrt();
+                let b = -x.powf(2.0) / 2.0 * sigma.powf(2.0);
+                Some((x, a * b.exp() * 10_000.0))
+            }),
+            "",
+        )),
     )?;
 
     Ok(())
@@ -156,6 +169,45 @@ fn generate_clt_histogram(clt: &mut CentralLimitTheoremGaussian701) -> Result<()
                 }
             }),
             "y = 1 / √(2πσ^2) * e^( (-0.5x)^2 / 2σ^2 )",
+        )),
+    )?;
+
+    Ok(())
+}
+
+/// Sample from the supplied inverse transform random number generator,
+/// bin the results, and plot the bins
+fn generate_inv_trans(clt: &mut InverseTransform701) -> Result<(), Box<dyn Error>> {
+    let mut bins: BTreeMap<String, i32> = BTreeMap::new();
+
+    (0..NUM_POINTS)
+        .map(|_| clt.next())
+        .map(|v| format!("{:0.3}", v))
+        .for_each(|k| {
+            bins.entry(k).and_modify(|v| *v += 1).or_insert(1);
+        });
+
+    let max_y = bins.values().max().unwrap().to_owned() as f64;
+
+    plot_histogram(
+        "output/assignment1/inv_trans.png",
+        "The Inverse Transform Method",
+        0.0..5.0,
+        0.005,
+        max_y,
+        bins,
+        Some((
+            Box::new(|x| {
+                let y = (x / clt.sigma().powf(2.0))
+                    * (-1.0 * x.powf(2.0) / (2.0 * clt.sigma().powf(2.0))).exp()
+                    * 1_050.0;
+                if y > max_y {
+                    None
+                } else {
+                    Some((x, y))
+                }
+            }),
+            "",
         )),
     )?;
 

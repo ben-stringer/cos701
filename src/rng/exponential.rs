@@ -15,4 +15,11 @@ impl<'a> Exponential701<'a> {
         let x = self.uniform.next();
         (-1.0 / self.b) * (1.0 - (self.b / self.a) * x).log10()
     }
+
+    pub fn a(&self) -> f64 {
+        self.a
+    }
+    pub fn b(&self) -> f64 {
+        self.b
+    }
 }

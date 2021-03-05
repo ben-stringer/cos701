@@ -16,7 +16,7 @@ pub fn do_assignment_2() -> Result<(), Box<dyn Error>> {
     part_2a(&mut uni)?;
 
     println!("Doing part b");
-    part_2b(&mut uni, 500, 0.5)?;
+    part_2b(&mut uni, 500, 0.7)?;
 
     println!("Doing part c");
     part_2c(&mut uni, 500, 2.0)?;
@@ -93,7 +93,7 @@ fn part_2c(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
     }
     // scatter_3d(
     animated_3d(
-        "output/assignment2/part_2c.png",
+        "output/assignment2/part_2c.gif",
         format!("Assignment 2c, L = 20, n = {}, r_min = {}", n, r_min).as_str(),
         0.0..L,
         0.0..L,

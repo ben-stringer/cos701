@@ -18,30 +18,19 @@ pub fn do_assignment_1() -> Result<(), Box<dyn Error>> {
 
     let mut uni = Uniform701::new();
 
-    println!("Generating a histogram using the uniform distribution");
     generate_uniform_histogram(&mut uni)?;
-
-    println!("Generating a histogram using the exponential distribution");
-    let mut exp = Exponential701::new(&mut uni, 1.0, 1.0);
-    generate_exponential_histogram(&mut exp)?;
-
-    println!("Generating a histogram using the Box-Müller method");
-    let mut bm = BoxMullerGaussian701::new(&mut uni);
-    generate_boxmuller_histogram(&mut bm)?;
-
-    println!("Generating a histogram using the central limit theorem method");
-    let mut clt = CentralLimitTheoremGaussian701::new(&mut uni, 8);
-    generate_clt_histogram(&mut clt)?;
-
-    println!("Generating a histogram using the inverse transform method");
-    let mut inv = InverseTransform701::new(&mut uni, 1.0);
-    generate_inv_trans(&mut inv)?;
+    part_1a(&mut Exponential701::new(&mut uni, 1.0, 1.0))?;
+    part_1b(&mut BoxMullerGaussian701::new(&mut uni))?;
+    part_1c(&mut CentralLimitTheoremGaussian701::new(&mut uni, 8))?;
+    part_1d(&mut InverseTransform701::new(&mut uni, 1.0))?;
 
     Ok(())
 }
 
 /// Sample from the supplied uniform random number generator, bin the results, and plot the bins
 fn generate_uniform_histogram(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
+    println!("Generating a histogram using the uniform distribution");
+
     let mut bins: BTreeMap<String, i32> = BTreeMap::new();
 
     (0..NUM_POINTS)
@@ -67,9 +56,10 @@ fn generate_uniform_histogram(uni: &mut Uniform701) -> Result<(), Box<dyn Error>
 }
 
 /// Sample from the supplied exponential random number generator, bin the results, and plot the bins
-fn generate_exponential_histogram(exp: &mut Exponential701) -> Result<(), Box<dyn Error>> {
-    let mut bins: BTreeMap<String, i32> = BTreeMap::new();
+fn part_1a(exp: &mut Exponential701) -> Result<(), Box<dyn Error>> {
+    println!("Generating a histogram using the exponential distribution");
 
+    let mut bins: BTreeMap<String, i32> = BTreeMap::new();
     (0..1_000_000)
         .map(|_| exp.next())
         .map(|v| format!("{:0.3}", v))
@@ -101,7 +91,9 @@ fn generate_exponential_histogram(exp: &mut Exponential701) -> Result<(), Box<dy
 }
 
 /// Sample from the supplied box muller random number generator, bin the results, and plot the bins
-fn generate_boxmuller_histogram(bm: &mut BoxMullerGaussian701) -> Result<(), Box<dyn Error>> {
+fn part_1b(bm: &mut BoxMullerGaussian701) -> Result<(), Box<dyn Error>> {
+    println!("Generating a histogram using the Box-Müller method");
+
     let mut bins: BTreeMap<String, i32> = BTreeMap::new();
 
     (0..NUM_POINTS)
@@ -136,7 +128,9 @@ fn generate_boxmuller_histogram(bm: &mut BoxMullerGaussian701) -> Result<(), Box
 
 /// Sample from the supplied central limit theorem gaussian random number generator,
 /// bin the results, and plot the bins
-fn generate_clt_histogram(clt: &mut CentralLimitTheoremGaussian701) -> Result<(), Box<dyn Error>> {
+fn part_1c(clt: &mut CentralLimitTheoremGaussian701) -> Result<(), Box<dyn Error>> {
+    println!("Generating a histogram using the central limit theorem method");
+
     let mut bins: BTreeMap<String, i32> = BTreeMap::new();
 
     (0..NUM_POINTS)
@@ -176,11 +170,13 @@ fn generate_clt_histogram(clt: &mut CentralLimitTheoremGaussian701) -> Result<()
 
 /// Sample from the supplied inverse transform random number generator,
 /// bin the results, and plot the bins
-fn generate_inv_trans(clt: &mut InverseTransform701) -> Result<(), Box<dyn Error>> {
+fn part_1d(inv: &mut InverseTransform701) -> Result<(), Box<dyn Error>> {
+    println!("Generating a histogram using the inverse transform method");
+
     let mut bins: BTreeMap<String, i32> = BTreeMap::new();
 
     (0..NUM_POINTS)
-        .map(|_| clt.next())
+        .map(|_| inv.next())
         .map(|v| format!("{:0.3}", v))
         .for_each(|k| {
             bins.entry(k).and_modify(|v| *v += 1).or_insert(1);
@@ -197,8 +193,8 @@ fn generate_inv_trans(clt: &mut InverseTransform701) -> Result<(), Box<dyn Error
         bins,
         Some((
             Box::new(|x| {
-                let y = (x / clt.sigma().powf(2.0))
-                    * (-1.0 * x.powf(2.0) / (2.0 * clt.sigma().powf(2.0))).exp()
+                let y = (x / inv.sigma().powf(2.0))
+                    * (-1.0 * x.powf(2.0) / (2.0 * inv.sigma().powf(2.0))).exp()
                     * 1_050.0;
                 if y > max_y {
                     None

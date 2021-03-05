@@ -72,7 +72,6 @@ fn generate_exponential_histogram(exp: &mut Exponential701) -> Result<(), Box<dy
 
     (0..1_000_000)
         .map(|_| exp.next())
-        // .map(|v| (v - 0.368) * (1.0 / 0.632))
         .map(|v| format!("{:0.3}", v))
         .for_each(|k| {
             bins.entry(k).and_modify(|v| *v += 1).or_insert(1);
@@ -89,10 +88,10 @@ fn generate_exponential_histogram(exp: &mut Exponential701) -> Result<(), Box<dy
         bins,
         Some((
             Box::new(|x| {
-                let sigma: f64 = 1.0;
-                let a = 1.0 / (2.0 * PI * sigma.powf(2.0)).sqrt();
-                let b = -x.powf(2.0) / 2.0 * sigma.powf(2.0);
-                Some((x, a * b.exp() * 10_000.0))
+                // let sigma: f64 = 1.0;
+                // let a = 1.0 / (2.0 * PI * sigma.powf(2.0)).sqrt();
+                // let b = -x.powf(2.0) / 2.0 * sigma.powf(2.0);
+                Some((x, exp.a() * (-exp.b() * x).exp() * 1_000.0))
             }),
             "",
         )),

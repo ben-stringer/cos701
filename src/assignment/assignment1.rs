@@ -49,7 +49,7 @@ fn generate_uniform_histogram(uni: &mut Uniform701) -> Result<(), Box<dyn Error>
         0.001,
         max_y,
         bins,
-        Some((Box::new(|x| Some((x, 1000.0))), "y = 1000")),
+        Some((Box::new(|x| (x, 1000.0)), "y = μ")),
     )?;
 
     Ok(())
@@ -71,19 +71,14 @@ fn part_1a(exp: &mut Exponential701) -> Result<(), Box<dyn Error>> {
 
     plot_histogram(
         "output/assignment1/exponential.png",
-        "Exponential distribution",
+        &format!("Exponential distribution: a = {}, b = {}", exp.a(), exp.b()),
         0.0..1.0,
         0.001,
         max_y,
         bins,
         Some((
-            Box::new(|x| {
-                // let sigma: f64 = 1.0;
-                // let a = 1.0 / (2.0 * PI * sigma.powf(2.0)).sqrt();
-                // let b = -x.powf(2.0) / 2.0 * sigma.powf(2.0);
-                Some((x, exp.a() * (-exp.b() * x).exp() * 1_000.0))
-            }),
-            "",
+            Box::new(|x| (x, exp.a() * (-exp.b() * x).exp() * 1_000.0)),
+            "ae^(-bx)",
         )),
     )?;
 
@@ -117,9 +112,10 @@ fn part_1b(bm: &mut BoxMullerGaussian701) -> Result<(), Box<dyn Error>> {
                 let sigma: f64 = 1.0;
                 let a = 1.0 / (2.0 * PI * sigma.powf(2.0)).sqrt();
                 let b = -x.powf(2.0) / 2.0 * sigma.powf(2.0);
-                Some((x, a * b.exp() * 10_000.0))
+                let y = a * b.exp() * 10_000.0;
+                (x, y)
             }),
-            "",
+            "y = (1 / √(2πσ^2)) * e^( x^2 / 2σ^2 )",
         )),
     )?;
 
@@ -151,17 +147,13 @@ fn part_1c(clt: &mut CentralLimitTheoremGaussian701) -> Result<(), Box<dyn Error
         bins,
         Some((
             Box::new(|x| {
-                let sigma: f64 = 10.0;
+                let sigma: f64 = 10.25;
                 let a = 1.0 / (2.0 * PI * sigma.powf(2.0)).sqrt();
                 let b = -(x - 0.5).powf(2.0) / 2.0 * sigma.powf(2.0);
                 let y = a * b.exp() * 100_000.0;
-                if y > max_y {
-                    None
-                } else {
-                    Some((x, y))
-                }
+                (x, y)
             }),
-            "y = 1 / √(2πσ^2) * e^( (-0.5x)^2 / 2σ^2 )",
+            "y = 1 / √(2πσ^2) * e^( (x-0.5)^2 / 2σ^2 )",
         )),
     )?;
 
@@ -186,7 +178,7 @@ fn part_1d(inv: &mut InverseTransform701) -> Result<(), Box<dyn Error>> {
 
     plot_histogram(
         "output/assignment1/inv_trans.png",
-        "The Inverse Transform Method",
+        &format!("The Inverse Transform Method, σ = {}", inv.sigma()),
         0.0..5.0,
         0.005,
         max_y,
@@ -196,13 +188,9 @@ fn part_1d(inv: &mut InverseTransform701) -> Result<(), Box<dyn Error>> {
                 let y = (x / inv.sigma().powf(2.0))
                     * (-1.0 * x.powf(2.0) / (2.0 * inv.sigma().powf(2.0))).exp()
                     * 1_050.0;
-                if y > max_y {
-                    None
-                } else {
-                    Some((x, y))
-                }
+                (x, y)
             }),
-            "",
+            "y = (x/σ^2) * e^( -(x^2)/(2σ^2) )",
         )),
     )?;
 
@@ -218,7 +206,7 @@ fn plot_histogram<'a>(
     x_step: f64,
     max_y: f64,
     bins: BTreeMap<String, i32>,
-    optional_curve: Option<(Box<dyn Fn(f64) -> Option<(f64, f64)> + 'a>, &str)>,
+    optional_curve: Option<(Box<dyn Fn(f64) -> (f64, f64) + 'a>, &str)>,
 ) -> Result<(), Box<dyn Error>> {
     println!("Plotting '{}'.", caption);
 
@@ -231,12 +219,12 @@ fn plot_histogram<'a>(
             .margin(32)
             .x_label_area_size(32)
             .y_label_area_size(32)
-            .build_cartesian_2d(x_range.to_owned().step(x_step).into_segmented(), 0.0..max_y)?;
+            .build_cartesian_2d(x_range.to_owned().step(x_step).into_segmented(), 0.0..1.0)?;
         chart.configure_mesh().disable_mesh().draw()?;
 
         chart.draw_series(bins.iter().map(|(k, v)| {
             let x = k.parse::<f64>().unwrap();
-            let y = *v as f64;
+            let y = *v as f64 / max_y;
             let x0 = SegmentValue::CenterOf(x);
             let x1 = SegmentValue::CenterOf(x + x_step);
             Rectangle::new([(x0, 0.0), (x1, y)], RED.filled())
@@ -249,26 +237,26 @@ fn plot_histogram<'a>(
             .margin(32)
             .x_label_area_size(32)
             .y_label_area_size(32)
-            .build_cartesian_2d(x_range.to_owned(), 0.0..max_y)?;
+            .build_cartesian_2d(x_range.to_owned(), 0.0..1.0)?;
         chart.configure_mesh().disable_mesh().draw()?;
-        chart.draw_series(LineSeries::new(
-            x_range
-                .to_owned()
-                .step(x_step)
-                .key_points(1_000_000)
-                .into_iter()
-                .map(curve_fn)
-                .filter(|o| o.is_some())
-                .map(|o| o.unwrap()),
-            &BLUE,
-        ))?;
-        // .label(curve_label)
-        // .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
-        // chart
-        //     .configure_series_labels()
-        //     .border_style(&BLACK)
-        //     .background_style(&WHITE.mix(0.8))
-        //     .draw()?;
+        chart
+            .draw_series(LineSeries::new(
+                x_range
+                    .to_owned()
+                    .step(x_step)
+                    .key_points(1_000_000)
+                    .into_iter()
+                    .map(curve_fn)
+                    .map(|(x, y)| (x, y / max_y)),
+                &BLUE,
+            ))?
+            .label(curve_label)
+            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
+        chart
+            .configure_series_labels()
+            .border_style(&BLACK)
+            .background_style(&WHITE.mix(0.8))
+            .draw()?;
     }
 
     println!("Done drawing '{}'", caption);

@@ -13,7 +13,9 @@ impl<'a> Exponential701<'a> {
 
     pub fn next(&mut self) -> f64 {
         let x = self.uniform.next();
-        (-1.0 / self.b) * (1.0 - (self.b / self.a) * x).ln()
+        let a = self.a;
+        let b = self.b;
+        -(-(b / a) * x + 1.0).ln() / b
     }
 
     pub fn a(&self) -> f64 {

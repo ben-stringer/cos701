@@ -20,11 +20,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     ensure_output_dirs_exist()?;
 
-    // assignment1::do_assignment_1()?;
-
+    assignment1::do_assignment_1()?;
     // assignment2::do_assignment_2()?;
-
-    assignment3::do_assignment_3()?;
+    // assignment3::do_assignment_3()?;
 
     // scratch()?;
 

@@ -14,6 +14,7 @@ impl<'a> CentralLimitTheoremGaussian701<'a> {
 
     /// Get the next random number normally distributed
     pub fn next(&mut self) -> f64 {
-        (0..self.n).map(|_| self.uniform.next()).sum::<f64>() / self.n as f64
+        let n = self.n;
+        (0..n).map(|_| self.uniform.next()).sum::<f64>() / n as f64
     }
 }

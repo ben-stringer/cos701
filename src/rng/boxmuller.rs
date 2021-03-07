@@ -28,12 +28,12 @@ impl<'a> BoxMullerGaussian701<'a> {
                 let u2 = self.uniform.next();
 
                 // Calculate the common values
-                let a = (-2_f64 * u1.ln()).sqrt();
-                let b = 2_f64 * PI * u2;
+                let r = (-2.0 * u1.ln()).sqrt();
+                let t = 2.0 * PI * u2;
 
                 // Generate two new gaussian random variables
-                let x = a * b.cos();
-                let y = a * b.sin();
+                let x = r * t.cos();
+                let y = r * t.sin();
 
                 (x, Some(y))
             }

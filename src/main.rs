@@ -1,8 +1,9 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-mod assignment;
+mod util;
 mod rng;
+mod assignment;
 
 #[allow(unused_imports)]
 use plotters::prelude::*;

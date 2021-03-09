@@ -1,6 +1,7 @@
 use plotters::prelude::*;
 
 use crate::rng::uniform::Uniform701;
+use crate::util::{distance_2d,distance_3d};
 use std::error::Error;
 use std::ops::Range;
 
@@ -19,15 +20,6 @@ pub fn do_assignment_2() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-/// Calculate the 2-dimensional distance between points a and b
-fn distance_2d(a: (f64, f64), b: (f64, f64)) -> f64 {
-    ((a.0 - b.0).powf(2.0) + (a.1 - b.1).powf(2.0)).sqrt()
-}
-
-/// Calculate the 3-dimensional distance between points a and b
-fn distance_3d(a: (f64, f64, f64), b: (f64, f64, f64)) -> f64 {
-    ((a.0 - b.0).powf(2.0) + (a.1 - b.1).powf(2.0) + (a.2 - b.2).powf(2.0)).sqrt()
-}
 
 /// Generate a set of random numbers in a two-dimensional box of length L. Assume L = 20
 /// and the number of points, n = 500.

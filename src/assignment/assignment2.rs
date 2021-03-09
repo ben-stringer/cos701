@@ -12,13 +12,8 @@ pub fn do_assignment_2() -> Result<(), Box<dyn Error>> {
 
     let mut uni = Uniform701::new();
 
-    println!("Doing part a");
-    part_2a(&mut uni)?;
-
-    println!("Doing part b");
+    part_2a(&mut uni, 500)?;
     part_2b(&mut uni, 500, 0.7)?;
-
-    println!("Doing part c");
     part_2c(&mut uni, 500, 2.0)?;
 
     Ok(())
@@ -36,13 +31,15 @@ fn distance_3d(a: (f64, f64, f64), b: (f64, f64, f64)) -> f64 {
 
 /// Generate a set of random numbers in a two-dimensional box of length L. Assume L = 20
 /// and the number of points, n = 500.
-fn part_2a(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
+fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
+    println!("Doing part a");
+
     scatter_2d(
         "output/assignment2/part_2a.png",
         "Assignment 2a, L = 20, n = 500",
         0.0..L,
         0.0..L,
-        (0..500).map(|_| (uni.next() * L, uni.next() * L)),
+        (0..n).map(|_| (uni.next() * L, uni.next() * L)),
     )?;
     Ok(())
 }
@@ -50,7 +47,10 @@ fn part_2a(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
 /// Modify the code in (2a) such that the minimum distance between any two random points is
 /// greater or equal to rmin. Choose n and rmin as 500 and 1.0, respectively, in your program.
 fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
+    println!("Doing part b");
+
     let mut accepted: Vec<(f64, f64)> = Vec::with_capacity(n);
+
     for _ in 0..n {
         let mut rejected = true;
         while rejected {
@@ -66,7 +66,7 @@ fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
     }
     scatter_2d(
         "output/assignment2/part_2b.png",
-        format!("Assignment 2b, L = 20, n = {}, r_min = {}", n, r_min).as_str(),
+        &format!("Assignment 2b, L = 20, n = {}, r_min = {}", n, r_min),
         0.0..L,
         0.0..L,
         accepted,
@@ -77,7 +77,10 @@ fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
 /// Repeat the computation in (2b) in three dimensions by changing rmin from 1 to 2.
 /// Show your results graphically.
 fn part_2c(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
+    println!("Doing part c");
+
     let mut accepted: Vec<(f64, f64, f64)> = Vec::with_capacity(n);
+
     for _ in 0..n {
         let mut rejected = true;
         while rejected {
@@ -94,7 +97,7 @@ fn part_2c(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
     // scatter_3d(
     animated_3d(
         "output/assignment2/part_2c.gif",
-        format!("Assignment 2c, L = 20, n = {}, r_min = {}", n, r_min).as_str(),
+        &format!("Assignment 2c, L = 20, n = {}, r_min = {}", n, r_min),
         0.0..L,
         0.0..L,
         0.0..L,

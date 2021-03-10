@@ -1,9 +1,9 @@
 #![allow(dead_code)]
 #![allow(unused_variables)]
 
-mod util;
-mod rng;
 mod assignment;
+mod rand;
+mod util;
 
 #[allow(unused_imports)]
 use plotters::prelude::*;
@@ -21,9 +21,9 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     ensure_output_dirs_exist()?;
 
-    assignment1::do_assignment_1()?;
-    assignment2::do_assignment_2()?;
-    // assignment3::do_assignment_3()?;
+    // assignment1::do_assignment_1()?;
+    // assignment2::do_assignment_2()?;
+    assignment3::do_assignment_3()?;
 
     // scratch()?;
 
@@ -33,9 +33,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
     println!("Creating output directories");
 
-    vec!["output/scratch", "output/assignment1", "output/assignment2"]
-        .into_iter()
-        .try_for_each(std::fs::create_dir_all)?;
+    vec![
+        "output/scratch",
+        "output/assignment1",
+        "output/assignment2",
+        "output/assignment3",
+    ]
+    .into_iter()
+    .try_for_each(std::fs::create_dir_all)?;
 
     Ok(())
 }

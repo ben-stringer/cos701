@@ -1,4 +1,4 @@
-use crate::rng::uniform::Uniform701;
+use crate::rand::uniform::Uniform701;
 use std::f64::consts::PI;
 
 pub struct BoxMullerGaussian701<'a> {

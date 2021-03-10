@@ -1,4 +1,4 @@
-use crate::rng::uniform::Uniform701;
+use crate::rand::uniform::Uniform701;
 
 pub struct Exponential701<'a> {
     uniform: &'a mut Uniform701,

@@ -1,4 +1,4 @@
-use crate::rng::uniform::Uniform701;
+use crate::rand::uniform::Uniform701;
 
 pub struct CentralLimitTheoremGaussian701<'a> {
     /// The uniform random source

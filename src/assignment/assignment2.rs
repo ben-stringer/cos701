@@ -1,7 +1,7 @@
 use plotters::prelude::*;
 
-use crate::rng::uniform::Uniform701;
-use crate::util::{distance_2d,distance_3d};
+use crate::rand::uniform::Uniform701;
+use crate::util::{distance_2d, distance_3d};
 use std::error::Error;
 use std::ops::Range;
 
@@ -19,7 +19,6 @@ pub fn do_assignment_2() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
-
 
 /// Generate a set of random numbers in a two-dimensional box of length L. Assume L = 20
 /// and the number of points, n = 500.

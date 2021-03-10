@@ -1,11 +1,11 @@
 use plotters::prelude::*;
 use std::collections::BTreeMap;
 
-use crate::rng::boxmuller::BoxMullerGaussian701;
-use crate::rng::clt_gaussian::CentralLimitTheoremGaussian701;
-use crate::rng::exponential::Exponential701;
-use crate::rng::inverse_transform::InverseTransform701;
-use crate::rng::uniform::Uniform701;
+use crate::rand::boxmuller::BoxMullerGaussian701;
+use crate::rand::clt_gaussian::CentralLimitTheoremGaussian701;
+use crate::rand::exponential::Exponential701;
+use crate::rand::inverse_transform::InverseTransform701;
+use crate::rand::uniform::Uniform701;
 use std::error::Error;
 use std::f64::consts::PI;
 use std::ops::Range;

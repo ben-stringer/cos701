@@ -6,6 +6,7 @@ use crate::rand::clt_gaussian::CentralLimitTheoremGaussian701;
 use crate::rand::exponential::Exponential701;
 use crate::rand::inverse_transform::InverseTransform701;
 use crate::rand::uniform::Uniform701;
+use log::info;
 use std::error::Error;
 use std::f64::consts::PI;
 use std::ops::Range;
@@ -14,7 +15,7 @@ const NUM_POINTS: i32 = 1_000_000;
 
 /// Entry-point for assignment 1
 pub fn do_assignment_1() -> Result<(), Box<dyn Error>> {
-    println!("Doing assignment 1");
+    info!("Doing assignment 1");
 
     let mut uni = Uniform701::new();
 
@@ -29,7 +30,7 @@ pub fn do_assignment_1() -> Result<(), Box<dyn Error>> {
 
 /// Sample from the supplied uniform random number generator, bin the results, and plot the bins
 fn generate_uniform_histogram(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
-    println!("Generating a histogram using the uniform distribution");
+    info!("Generating a histogram using the uniform distribution");
 
     let mut bins: BTreeMap<String, i32> = BTreeMap::new();
 
@@ -57,7 +58,7 @@ fn generate_uniform_histogram(uni: &mut Uniform701) -> Result<(), Box<dyn Error>
 
 /// Sample from the supplied exponential random number generator, bin the results, and plot the bins
 fn part_1a(exp: &mut Exponential701) -> Result<(), Box<dyn Error>> {
-    println!("Generating a histogram using the exponential distribution");
+    info!("Generating a histogram using the exponential distribution");
 
     let mut bins: BTreeMap<String, i32> = BTreeMap::new();
     (0..1_000_000)
@@ -87,7 +88,7 @@ fn part_1a(exp: &mut Exponential701) -> Result<(), Box<dyn Error>> {
 
 /// Sample from the supplied box muller random number generator, bin the results, and plot the bins
 fn part_1b(bm: &mut BoxMullerGaussian701) -> Result<(), Box<dyn Error>> {
-    println!("Generating a histogram using the Box-Müller method");
+    info!("Generating a histogram using the Box-Müller method");
 
     let mut bins: BTreeMap<String, i32> = BTreeMap::new();
 
@@ -125,7 +126,7 @@ fn part_1b(bm: &mut BoxMullerGaussian701) -> Result<(), Box<dyn Error>> {
 /// Sample from the supplied central limit theorem gaussian random number generator,
 /// bin the results, and plot the bins
 fn part_1c(clt: &mut CentralLimitTheoremGaussian701) -> Result<(), Box<dyn Error>> {
-    println!("Generating a histogram using the central limit theorem method");
+    info!("Generating a histogram using the central limit theorem method");
 
     let mut bins: BTreeMap<String, i32> = BTreeMap::new();
 
@@ -163,7 +164,7 @@ fn part_1c(clt: &mut CentralLimitTheoremGaussian701) -> Result<(), Box<dyn Error
 /// Sample from the supplied inverse transform random number generator,
 /// bin the results, and plot the bins
 fn part_1d(inv: &mut InverseTransform701) -> Result<(), Box<dyn Error>> {
-    println!("Generating a histogram using the inverse transform method");
+    info!("Generating a histogram using the inverse transform method");
 
     let mut bins: BTreeMap<String, i32> = BTreeMap::new();
 
@@ -208,7 +209,7 @@ fn plot_histogram<'a>(
     bins: BTreeMap<String, i32>,
     optional_curve: Option<(Box<dyn Fn(f64) -> (f64, f64) + 'a>, &str)>,
 ) -> Result<(), Box<dyn Error>> {
-    println!("Plotting '{}'.", caption);
+    info!("Plotting '{}'.", caption);
 
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -259,6 +260,6 @@ fn plot_histogram<'a>(
             .draw()?;
     }
 
-    println!("Done drawing '{}'", caption);
+    info!("Done drawing '{}'", caption);
     Ok(())
 }

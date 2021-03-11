@@ -2,7 +2,7 @@ use plotters::prelude::*;
 
 use crate::rand::random_vec::NaiveRandomVec;
 use crate::rand::uniform::Uniform701;
-
+use log::info;
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::ops::Range;
@@ -10,7 +10,7 @@ use std::ops::Range;
 const NUM_ITER: usize = 1_000_000;
 
 pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
-    println!("Doing assignment 3");
+    info!("Doing assignment 3");
 
     let mut uni = Uniform701::new();
 
@@ -36,7 +36,7 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
 }
 
 fn part_3a_2d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Error>> {
-    println!("Doing part 3a for 2-dimensions");
+    info!("Doing part 3a for 2-dimensions");
 
     let accepted: Vec<(f64, f64)> = (0..n_iter)
         .map(|_| NaiveRandomVec::scaled(uni, 2, 2.0, -1.0))
@@ -62,7 +62,7 @@ fn part_3a_2d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Erro
 }
 
 fn part_3a_3d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Error>> {
-    println!("Doing part 3a for 3-dimensions");
+    info!("Doing part 3a for 3-dimensions");
 
     let accepted: Vec<(f64, f64, f64)> = (0..n_iter)
         .map(|_| NaiveRandomVec::scaled(uni, 3, 2.0, -1.0))
@@ -90,7 +90,7 @@ fn part_3a_3d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Erro
 }
 
 fn part_3b_nd(uni: &mut Uniform701, dim: usize, n_iter: usize) -> Result<usize, Box<dyn Error>> {
-    println!("Doing part 3b for {}-dimensions", dim);
+    info!("Doing part 3b for {}-dimensions", dim);
 
     Ok((0..n_iter)
         .map(|_| NaiveRandomVec::scaled(uni, dim, 2.0, -1.0))
@@ -161,7 +161,7 @@ fn plot_accept_rates(
     n_iter: usize,
     accept_rate: BTreeMap<usize, usize>,
 ) -> Result<(), Box<dyn Error>> {
-    println!("Plotting accept rates for parts 3a-3b.");
+    info!("Plotting accept rates for parts 3a-3b.");
 
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;

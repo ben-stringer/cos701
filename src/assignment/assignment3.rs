@@ -1,18 +1,19 @@
 use plotters::prelude::*;
 
-use crate::rand::random_vec::NaiveRandomVec;
+use crate::rand::random_vec::{NaiveRandomVec, EfficientRandomVec};
 use crate::rand::uniform::Uniform701;
-use log::info;
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::ops::Range;
+use crate::rand::boxmuller::BoxMullerGaussian701;
 
 const NUM_ITER: usize = 1_000_000;
 
 pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
-    info!("Doing assignment 3");
+    log::info!("Doing assignment 3");
 
     let mut uni = Uniform701::new();
+    let mut gau = BoxMullerGaussian701::new(Uniform701::new());
 
     // key is the number of dimensions, e.g., accept_rate.get(2) is the 2-D accept rate
     let mut accept_rate: BTreeMap<usize, usize> = BTreeMap::new();
@@ -24,6 +25,9 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
         .for_each(|(dim, num_accepted)| {
             accept_rate.insert(dim, num_accepted);
         });
+    (2..11)
+        .map(|dim| part_3c(&mut uni, &mut gau, dim, NUM_ITER).unwrap())
+        .for_each(|x| log::info!("{} / {} = {}", x, NUM_ITER, x as f64 / NUM_ITER as f64));
 
     plot_accept_rates(
         "output/assignment3/3b_accept_rates.png",
@@ -36,7 +40,7 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
 }
 
 fn part_3a_2d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Error>> {
-    info!("Doing part 3a for 2-dimensions");
+    log::info!("Doing part 3a for 2-dimensions");
 
     let accepted: Vec<(f64, f64)> = (0..n_iter)
         .map(|_| NaiveRandomVec::scaled(uni, 2, 2.0, -1.0))
@@ -62,7 +66,7 @@ fn part_3a_2d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Erro
 }
 
 fn part_3a_3d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Error>> {
-    info!("Doing part 3a for 3-dimensions");
+    log::info!("Doing part 3a for 3-dimensions");
 
     let accepted: Vec<(f64, f64, f64)> = (0..n_iter)
         .map(|_| NaiveRandomVec::scaled(uni, 3, 2.0, -1.0))
@@ -90,10 +94,19 @@ fn part_3a_3d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Erro
 }
 
 fn part_3b_nd(uni: &mut Uniform701, dim: usize, n_iter: usize) -> Result<usize, Box<dyn Error>> {
-    info!("Doing part 3b for {}-dimensions", dim);
+    log::info!("Doing part 3b for {}-dimensions", dim);
 
     Ok((0..n_iter)
         .map(|_| NaiveRandomVec::scaled(uni, dim, 2.0, -1.0))
+        .filter(|v| v.is_in_sphere(1.0))
+        .count())
+}
+
+fn part_3c(uni: &mut Uniform701, gaussian: &mut BoxMullerGaussian701, dim: usize, n_iter: usize) -> Result<usize, Box<dyn Error>> {
+    log::info!("Doing part 3c for {}-dimensions", dim);
+
+    Ok((0..n_iter)
+        .map(|_| EfficientRandomVec::scaled(uni, gaussian, dim, 2.0, -1.0))
         .filter(|v| v.is_in_sphere(1.0))
         .count())
 }
@@ -161,7 +174,7 @@ fn plot_accept_rates(
     n_iter: usize,
     accept_rate: BTreeMap<usize, usize>,
 ) -> Result<(), Box<dyn Error>> {
-    info!("Plotting accept rates for parts 3a-3b.");
+    log::info!("Plotting accept rates for parts 3a-3b.");
 
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;

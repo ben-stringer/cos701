@@ -1,14 +1,14 @@
 use crate::rand::uniform::Uniform701;
 
-pub struct CentralLimitTheoremGaussian701<'a> {
+pub struct CentralLimitTheoremGaussian701 {
     /// The uniform random source
-    uniform: &'a mut Uniform701,
+    uniform: Uniform701,
     n: usize,
 }
 
-impl<'a> CentralLimitTheoremGaussian701<'a> {
+impl CentralLimitTheoremGaussian701 {
     /// Construct a new CentralLimitTheoremGaussian701
-    pub fn new(uniform: &'a mut Uniform701, n: usize) -> Self {
+    pub fn new(uniform: Uniform701, n: usize) -> Self {
         Self { uniform, n }
     }
 

@@ -5,10 +5,9 @@ mod assignment;
 mod rand;
 mod util;
 
-use log::info;
+use simple_logger::SimpleLogger;
 #[allow(unused_imports)]
 use plotters::prelude::*;
-use simple_logger::SimpleLogger;
 use std::error::Error;
 
 #[allow(unused_imports)]
@@ -21,12 +20,12 @@ use crate::assignment::assignment3;
 fn main() -> Result<(), Box<dyn Error>> {
     SimpleLogger::new().init()?;
 
-    info!("Hello world");
+    log::info!("Hello world");
 
     ensure_output_dirs_exist()?;
 
-    assignment1::do_assignment_1()?;
-    assignment2::do_assignment_2()?;
+    // assignment1::do_assignment_1()?;
+    // assignment2::do_assignment_2()?;
     assignment3::do_assignment_3()?;
 
     // scratch()?;
@@ -35,7 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
-    info!("Creating output directories");
+    log::info!("Creating output directories");
 
     vec![
         "output/scratch",

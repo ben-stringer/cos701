@@ -1,13 +1,13 @@
 use crate::rand::uniform::Uniform701;
 
-pub struct Exponential701<'a> {
-    uniform: &'a mut Uniform701,
+pub struct Exponential701 {
+    uniform: Uniform701,
     a: f64,
     b: f64,
 }
 
-impl<'a> Exponential701<'a> {
-    pub fn new(uniform: &'a mut Uniform701, a: f64, b: f64) -> Self {
+impl Exponential701 {
+    pub fn new(uniform: Uniform701, a: f64, b: f64) -> Self {
         Self { uniform, a, b }
     }
 

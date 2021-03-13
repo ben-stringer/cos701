@@ -2,7 +2,6 @@ use plotters::prelude::*;
 
 use crate::rand::uniform::Uniform701;
 use crate::util::{distance_2d, distance_3d};
-use log::info;
 use std::error::Error;
 use std::ops::Range;
 
@@ -10,7 +9,7 @@ const L: f64 = 20.0;
 
 /// Entry-point for assignment 2
 pub fn do_assignment_2() -> Result<(), Box<dyn Error>> {
-    info!("Doing assignment 2");
+    log::info!("Doing assignment 2");
 
     let mut uni = Uniform701::new();
 
@@ -24,7 +23,7 @@ pub fn do_assignment_2() -> Result<(), Box<dyn Error>> {
 /// Generate a set of random numbers in a two-dimensional box of length L. Assume L = 20
 /// and the number of points, n = 500.
 fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
-    info!("Doing part a");
+    log::info!("Doing part a");
 
     scatter_2d(
         "output/assignment2/part_2a.png",
@@ -39,7 +38,7 @@ fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
 /// Modify the code in (2a) such that the minimum distance between any two random points is
 /// greater or equal to rmin. Choose n and rmin as 500 and 1.0, respectively, in your program.
 fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
-    info!("Doing part b");
+    log::info!("Doing part b");
 
     let mut accepted: Vec<(f64, f64)> = Vec::with_capacity(n);
 
@@ -69,7 +68,7 @@ fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
 /// Repeat the computation in (2b) in three dimensions by changing rmin from 1 to 2.
 /// Show your results graphically.
 fn part_2c(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
-    info!("Doing part c");
+    log::info!("Doing part c");
 
     let mut accepted: Vec<(f64, f64, f64)> = Vec::with_capacity(n);
 
@@ -170,7 +169,7 @@ fn animated_3d(
 
     for i in 0..10 {
         let frame = format!("Frame {}", i);
-        info!("{}", frame);
+        log::info!("{}", frame);
         let yaw = i as f64 * 0.2;
         root.fill(&WHITE)?;
 

@@ -7,33 +7,42 @@ use std::collections::BTreeMap;
 use std::error::Error;
 use std::ops::Range;
 
-const NUM_ITER: usize = 1_000_000;
-
 pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     log::info!("Doing assignment 3");
 
     let mut uni = Uniform701::new();
     let mut gau = BoxMullerGaussian701::new(Uniform701::new());
 
-    // key is the number of dimensions, e.g., accept_rate.get(2) is the 2-D accept rate
-    let mut accept_rate: BTreeMap<usize, usize> = BTreeMap::new();
+    let mut to_plot: Vec<(BTreeMap<usize, f64>, String)> = Vec::new();
 
-    accept_rate.insert(2, part_3a_2d(&mut uni, NUM_ITER)?);
-    accept_rate.insert(3, part_3a_3d(&mut uni, NUM_ITER)?);
-    (4..11)
-        .map(|dim| (dim, part_3b_nd(&mut uni, dim, NUM_ITER).unwrap()))
-        .for_each(|(dim, num_accepted)| {
-            accept_rate.insert(dim, num_accepted);
-        });
-    (2..11)
-        .map(|dim| part_3c(&mut uni, &mut gau, dim, NUM_ITER).unwrap())
-        .for_each(|x| log::info!("{} / {} = {}", x, NUM_ITER, x as f64 / NUM_ITER as f64));
+    for num_iter in vec![100, 1000, 10_000] {
+        // key is the number of dimensions, e.g., accept_rate.get(2) is the 2-D accept rate
+        let mut accept_rate: BTreeMap<usize, f64> = BTreeMap::new();
+
+        accept_rate.insert(2, part_3a_2d(&mut uni, num_iter)? as f64 / num_iter as f64);
+        accept_rate.insert(3, part_3a_3d(&mut uni, num_iter)? as f64 / num_iter as f64);
+        (4..11)
+            .map(|dim| (dim, part_3b_nd(&mut uni, dim, num_iter).unwrap()))
+            .map(|(dim, num_accepted)| (dim, num_accepted as f64 / num_iter as f64))
+            .for_each(|(dim, rate)| {
+                accept_rate.insert(dim, rate);
+            });
+        to_plot.push((accept_rate, format!("n = {}", num_iter)));
+    }
+    to_plot.push((
+        (2..=10)
+            .map(|dim| (dim, part_3c(&mut uni, &mut gau, dim, 10_000).unwrap()))
+            .map(|(dim, num_accepted)| (dim, num_accepted as f64 / 10_000.0))
+            .collect(),
+        "Efficient".to_owned(),
+    ));
+
+    // .for_each(|x| log::info!("{} / {} = {}", x, NUM_ITER, x as f64 / NUM_ITER as f64));
 
     plot_accept_rates(
         "output/assignment3/3b_accept_rates.png",
         "Accept rates for d = 2..10",
-        NUM_ITER,
-        accept_rate,
+        to_plot,
     )?;
 
     Ok(())
@@ -176,8 +185,7 @@ fn scatter_3d(
 fn plot_accept_rates(
     path: &str,
     caption: &str,
-    n_iter: usize,
-    accept_rate: BTreeMap<usize, usize>,
+    to_plot: Vec<(BTreeMap<usize, f64>, String)>,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting accept rates for parts 3a-3b.");
 
@@ -191,20 +199,24 @@ fn plot_accept_rates(
         .y_label_area_size(32)
         .build_cartesian_2d(1.9..10.0, 0.0..1.0)?;
     chart.configure_mesh().disable_mesh().draw()?;
-    chart.draw_series(LineSeries::new(
-        accept_rate
-            .iter()
-            .map(|entry| (*entry.0 as f64, (*entry.1 as f64 / n_iter as f64))),
-        &BLUE,
-    ))?;
-    // .label(curve_label)
-    // .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE)),
-    // );
-    // chart
-    //     .configure_series_labels()
-    //     .border_style(&BLACK)
-    //     .background_style(&WHITE.mix(0.8))
-    //     .draw()?;
+
+    for (accept_rate, curve_label) in &to_plot {
+        chart
+            .draw_series(LineSeries::new(
+                accept_rate
+                    .iter()
+                    .map(|entry| (*entry.0 as f64, (*entry.1 as f64))),
+                &BLUE,
+            ))?
+            .label(curve_label.to_owned())
+            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
+    }
+
+    chart
+        .configure_series_labels()
+        .border_style(&BLACK)
+        .background_style(&WHITE.mix(0.8))
+        .draw()?;
 
     Ok(())
 }

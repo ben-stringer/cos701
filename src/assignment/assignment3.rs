@@ -1,11 +1,11 @@
 use plotters::prelude::*;
 
-use crate::rand::random_vec::{NaiveRandomVec, EfficientRandomVec};
+use crate::rand::boxmuller::BoxMullerGaussian701;
+use crate::rand::random_vec::{EfficientRandomVec, NaiveRandomVec};
 use crate::rand::uniform::Uniform701;
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::ops::Range;
-use crate::rand::boxmuller::BoxMullerGaussian701;
 
 const NUM_ITER: usize = 1_000_000;
 
@@ -102,7 +102,12 @@ fn part_3b_nd(uni: &mut Uniform701, dim: usize, n_iter: usize) -> Result<usize, 
         .count())
 }
 
-fn part_3c(uni: &mut Uniform701, gaussian: &mut BoxMullerGaussian701, dim: usize, n_iter: usize) -> Result<usize, Box<dyn Error>> {
+fn part_3c(
+    uni: &mut Uniform701,
+    gaussian: &mut BoxMullerGaussian701,
+    dim: usize,
+    n_iter: usize,
+) -> Result<usize, Box<dyn Error>> {
     log::info!("Doing part 3c for {}-dimensions", dim);
 
     Ok((0..n_iter)

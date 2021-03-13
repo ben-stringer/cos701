@@ -19,7 +19,10 @@ pub fn do_assignment_1() -> Result<(), Box<dyn Error>> {
     generate_uniform_histogram(Uniform701::new())?;
     part_1a(&mut Exponential701::new(Uniform701::new(), 1.0, 1.0))?;
     part_1b(&mut BoxMullerGaussian701::new(Uniform701::new()))?;
-    part_1c(&mut CentralLimitTheoremGaussian701::new(Uniform701::new(), 8))?;
+    part_1c(&mut CentralLimitTheoremGaussian701::new(
+        Uniform701::new(),
+        8,
+    ))?;
     part_1d(&mut InverseTransform701::new(Uniform701::new(), 1.0))?;
 
     Ok(())
@@ -91,7 +94,7 @@ fn part_1b(bm: &mut BoxMullerGaussian701) -> Result<(), Box<dyn Error>> {
 
     (0..NUM_POINTS)
         .map(|_| bm.next())
-        .map(|v| format!("{:0.2}", v))
+        .map(|v| format!("{:0.3}", v))
         .for_each(|k| {
             bins.entry(k).and_modify(|v| *v += 1).or_insert(1);
         });
@@ -101,16 +104,16 @@ fn part_1b(bm: &mut BoxMullerGaussian701) -> Result<(), Box<dyn Error>> {
     plot_histogram(
         "output/assignment1/box_muller.png",
         "The Box-Müller Method",
-        -5.0..5.0,
-        0.01,
+        0.0..1.0,
+        0.001,
         max_y,
         bins,
         Some((
             Box::new(|x| {
-                let sigma: f64 = 1.0;
+                let sigma: f64 = 10.0;
                 let a = 1.0 / (2.0 * PI * sigma.powf(2.0)).sqrt();
-                let b = -x.powf(2.0) / 2.0 * sigma.powf(2.0);
-                let y = a * b.exp() * 10_000.0;
+                let b = -(x - 0.5).powf(2.0) / 2.0 * sigma.powf(2.0);
+                let y = a * b.exp() * 100_000.0;
                 (x, y)
             }),
             "y = (1 / √(2πσ^2)) * e^( x^2 / 2σ^2 )",

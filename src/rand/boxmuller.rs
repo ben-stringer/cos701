@@ -32,8 +32,8 @@ impl BoxMullerGaussian701 {
                 let t = 2.0 * PI * u2;
 
                 // Generate two new gaussian random variables
-                let x = r * t.cos();
-                let y = r * t.sin();
+                let x = (r * t.cos()) / 10.0 + 0.5;
+                let y = (r * t.sin()) / 10.0 + 0.5;
 
                 (x, Some(y))
             }

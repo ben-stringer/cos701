@@ -5,9 +5,9 @@ mod assignment;
 mod rand;
 mod util;
 
-use simple_logger::SimpleLogger;
 #[allow(unused_imports)]
 use plotters::prelude::*;
+use simple_logger::SimpleLogger;
 use std::error::Error;
 
 #[allow(unused_imports)]

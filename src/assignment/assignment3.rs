@@ -1,7 +1,7 @@
 use plotters::prelude::*;
 
 use crate::rand::boxmuller::BoxMullerGaussian701;
-use crate::rand::random_vec::{EfficientRandomVec, NaiveRandomVec};
+use crate::rand::random_vec::RandomVec;
 use crate::rand::uniform::Uniform701;
 use std::collections::BTreeMap;
 use std::error::Error;
@@ -15,7 +15,8 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
 
     let mut to_plot: Vec<(BTreeMap<usize, f64>, String, RGBColor)> = Vec::new();
 
-    for (num_iter, color) in vec![(100,BLUE), (1000,BLACK), (10_000,RED)] {
+    // TODO: Currently redrawing the 2-d and 3-d spheres.  Only need to draw them once
+    for (num_iter, color) in vec![(100, BLUE), (1000, BLACK), (10_000, RED)] {
         // key is the number of dimensions, e.g., accept_rate.get(2) is the 2-D accept rate
         let mut accept_rate: BTreeMap<usize, f64> = BTreeMap::new();
 
@@ -53,7 +54,7 @@ fn part_3a_2d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Erro
     log::info!("Doing part 3a for 2-dimensions");
 
     let accepted: Vec<(f64, f64)> = (0..n_iter)
-        .map(|_| NaiveRandomVec::scaled(uni, 2, 2.0, -1.0))
+        .map(|_| RandomVec::naive_scaled(uni, 2, 2.0, -1.0))
         .filter(|v| v.is_in_sphere(1.0))
         .map(|v| {
             let points = v.get().to_owned();
@@ -79,7 +80,7 @@ fn part_3a_3d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Erro
     log::info!("Doing part 3a for 3-dimensions");
 
     let accepted: Vec<(f64, f64, f64)> = (0..n_iter)
-        .map(|_| NaiveRandomVec::scaled(uni, 3, 2.0, -1.0))
+        .map(|_| RandomVec::naive_scaled(uni, 3, 2.0, -1.0))
         .filter(|v| v.is_in_sphere(1.0))
         .map(|v| {
             let points = v.get().to_owned();
@@ -107,7 +108,7 @@ fn part_3b_nd(uni: &mut Uniform701, dim: usize, n_iter: usize) -> Result<usize, 
     log::info!("Doing part 3b for {}-dimensions", dim);
 
     Ok((0..n_iter)
-        .map(|_| NaiveRandomVec::scaled(uni, dim, 2.0, -1.0))
+        .map(|_| RandomVec::naive_scaled(uni, dim, 2.0, -1.0))
         .filter(|v| v.is_in_sphere(1.0))
         .count())
 }
@@ -121,7 +122,7 @@ fn part_3c(
     log::info!("Doing part 3c for {}-dimensions", dim);
 
     Ok((0..n_iter)
-        .map(|_| EfficientRandomVec::scaled(uni, gaussian, dim, 2.0, -1.0))
+        .map(|_| RandomVec::efficient_scaled(uni, gaussian, dim, 2.0, -1.0))
         .filter(|v| v.is_in_sphere(1.0))
         .count())
 }
@@ -211,8 +212,7 @@ fn plot_accept_rates(
             ))?
             .label(curve_label.to_owned())
             .legend(move |(x, y)| {
-                PathElement::new(vec![(x, y), (x + 20, y)],
-                                 ShapeStyle::from(&color))
+                PathElement::new(vec![(x, y), (x + 20, y)], ShapeStyle::from(&color))
             });
     }
 

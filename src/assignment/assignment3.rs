@@ -13,9 +13,9 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     let mut uni = Uniform701::new();
     let mut gau = BoxMullerGaussian701::new(Uniform701::new());
 
-    let mut to_plot: Vec<(BTreeMap<usize, f64>, String)> = Vec::new();
+    let mut to_plot: Vec<(BTreeMap<usize, f64>, String, RGBColor)> = Vec::new();
 
-    for num_iter in vec![100, 1000, 10_000] {
+    for (num_iter, color) in vec![(100,BLUE), (1000,BLACK), (10_000,RED)] {
         // key is the number of dimensions, e.g., accept_rate.get(2) is the 2-D accept rate
         let mut accept_rate: BTreeMap<usize, f64> = BTreeMap::new();
 
@@ -27,7 +27,7 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
             .for_each(|(dim, rate)| {
                 accept_rate.insert(dim, rate);
             });
-        to_plot.push((accept_rate, format!("n = {}", num_iter)));
+        to_plot.push((accept_rate, format!("n = {}", num_iter), color));
     }
     to_plot.push((
         (2..=10)
@@ -35,6 +35,7 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
             .map(|(dim, num_accepted)| (dim, num_accepted as f64 / 10_000.0))
             .collect(),
         "Efficient".to_owned(),
+        GREEN,
     ));
 
     // .for_each(|x| log::info!("{} / {} = {}", x, NUM_ITER, x as f64 / NUM_ITER as f64));
@@ -185,7 +186,7 @@ fn scatter_3d(
 fn plot_accept_rates(
     path: &str,
     caption: &str,
-    to_plot: Vec<(BTreeMap<usize, f64>, String)>,
+    to_plot: Vec<(BTreeMap<usize, f64>, String, RGBColor)>,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting accept rates for parts 3a-3b.");
 
@@ -200,16 +201,19 @@ fn plot_accept_rates(
         .build_cartesian_2d(1.9..10.0, 0.0..1.0)?;
     chart.configure_mesh().disable_mesh().draw()?;
 
-    for (accept_rate, curve_label) in &to_plot {
+    for (accept_rate, curve_label, color) in to_plot {
         chart
             .draw_series(LineSeries::new(
                 accept_rate
                     .iter()
                     .map(|entry| (*entry.0 as f64, (*entry.1 as f64))),
-                &BLUE,
+                ShapeStyle::from(&color),
             ))?
             .label(curve_label.to_owned())
-            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
+            .legend(move |(x, y)| {
+                PathElement::new(vec![(x, y), (x + 20, y)],
+                                 ShapeStyle::from(&color))
+            });
     }
 
     chart

@@ -45,7 +45,10 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     // Compute expected accept rates for the accept-reject method
     accept_rates.push((
         (2..=10)
-            .map(|d| (d, PI.powf(d as f64/2.0) / (2_f64.powf(d as f64) * (d as f64/2.0) * util::gamma_half(d))) )
+            .map(|d| (
+                d,
+                PI.powf(d as f64/2.0) /
+                    (2_f64.powf(d as f64) * util::gamma_half(d))) )
             .collect(),
         "Exact".to_owned(),
         BLACK

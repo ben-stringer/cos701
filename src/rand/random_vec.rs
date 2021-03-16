@@ -41,10 +41,7 @@ impl RandomVec {
         shift_by: f64,
     ) -> Self {
         Self {
-            v: Self::gen_efficient_vec(uniform, gaussian, dim, scale_by, shift_by)
-                .into_iter()
-                .map(|x| x * scale_by + shift_by)
-                .collect(),
+            v: Self::gen_efficient_vec(uniform, gaussian, dim, scale_by, shift_by),
             dim,
         }
     }
@@ -57,12 +54,14 @@ impl RandomVec {
         shift_by: f64,
     ) -> Vec<f64> {
         let x: Vec<f64> = (0..dim)
-            // .map(|_| gaussian.next() * scale_by - shift_by)
-            .map(|_| gaussian.next())
+            .map(|_| gaussian.next() * scale_by + shift_by)
             .collect();
         let mag = (&x).into_iter().map(|xi| xi.powi(2)).sum::<f64>().sqrt();
         let alpha = uniform.next().powf(1.0 / dim as f64);
-        x.into_iter().map(|xi| xi / mag * alpha).collect()
+        x.into_iter()
+            .map(|xi| xi / mag)// scale point onto surface of unit sphere
+            .map(|xi| xi * alpha)// scale point to point within unit sphere
+            .collect()
     }
 
     pub fn get(&self) -> &Vec<f64> {

@@ -82,7 +82,7 @@ fn draw_2d_and_3d_naive(uni: &mut Uniform701, n_iter: usize) -> Result<(), Box<d
 
     log::info!("Doing part 3a for 3-dimensions, naively");
     animate_3d(
-        "output/assignment3/3a_3D_naive.png",
+        "output/assignment3/3a_3D_naive.gif",
         "Naive sphere r = 1, dimension = 3",
         -1.0..1.0,
         -1.0..1.0,
@@ -113,7 +113,7 @@ fn draw_2d_and_3d_efficient(uni: &mut Uniform701, n_iter: usize) -> Result<(), B
         -1.0..1.0,
         -1.0..1.0,
         (0..n_iter)
-            .map(|_| RandomVec::efficient(uni, &mut gaussian, 2))
+            .map(|_| RandomVec::efficient_scaled(uni, &mut gaussian, 2, 2.0, -1.0))
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
                 let points = v.get().to_owned();
@@ -127,7 +127,7 @@ fn draw_2d_and_3d_efficient(uni: &mut Uniform701, n_iter: usize) -> Result<(), B
 
     log::info!("Doing part 3a for 3-dimensions, efficiently");
     animate_3d(
-        "output/assignment3/3a_3D_efficient.png",
+        "output/assignment3/3a_3D_efficient.gif",
         "Efficient sphere r = 1, dimension = 3",
         -1.0..1.0,
         -1.0..1.0,

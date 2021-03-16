@@ -3,8 +3,10 @@ use plotters::prelude::*;
 use crate::rand::boxmuller::BoxMullerGaussian701;
 use crate::rand::random_vec::RandomVec;
 use crate::rand::uniform::Uniform701;
+use crate::util;
 use std::collections::BTreeMap;
 use std::error::Error;
+use std::f64::consts::PI;
 use std::ops::Range;
 
 pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
@@ -13,24 +15,24 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     let mut uni = Uniform701::new();
     let mut gau = BoxMullerGaussian701::new(Uniform701::new());
 
-    let mut to_plot: Vec<(BTreeMap<usize, f64>, String, RGBColor)> = Vec::new();
+    draw_2d_and_3d_samplings(&mut uni, 10_000)?;
 
-    // TODO: Currently redrawing the 2-d and 3-d spheres.  Only need to draw them once
-    for (num_iter, color) in vec![(100, BLUE), (1000, BLACK), (10_000, RED)] {
-        // key is the number of dimensions, e.g., accept_rate.get(2) is the 2-D accept rate
-        let mut accept_rate: BTreeMap<usize, f64> = BTreeMap::new();
+    let mut accept_rates: Vec<(BTreeMap<usize, f64>, String, RGBColor)> = Vec::new();
 
-        accept_rate.insert(2, part_3a_2d(&mut uni, num_iter)? as f64 / num_iter as f64);
-        accept_rate.insert(3, part_3a_3d(&mut uni, num_iter)? as f64 / num_iter as f64);
-        (4..11)
-            .map(|dim| (dim, part_3b_nd(&mut uni, dim, num_iter).unwrap()))
-            .map(|(dim, num_accepted)| (dim, num_accepted as f64 / num_iter as f64))
-            .for_each(|(dim, rate)| {
-                accept_rate.insert(dim, rate);
-            });
-        to_plot.push((accept_rate, format!("n = {}", num_iter), color));
+    // Compute accept rates for the accept-reject method
+    for (num_iter, color) in vec![(100, CYAN), (1000, BLUE), (10_000, RED)] {
+        accept_rates.push((
+            (2..=10)
+                .map(|dim| (dim, part_3b_nd(&mut uni, dim, num_iter).unwrap()))
+                .map(|(dim, num_accepted)| (dim, num_accepted as f64 / num_iter as f64))
+                .collect(),
+            format!("n = {}", num_iter),
+            color,
+        ));
     }
-    to_plot.push((
+
+    // Compute accept rates for the efficient method; expecting 100% accept rate
+    accept_rates.push((
         (2..=10)
             .map(|dim| (dim, part_3c(&mut uni, &mut gau, dim, 10_000).unwrap()))
             .map(|(dim, num_accepted)| (dim, num_accepted as f64 / 10_000.0))
@@ -39,69 +41,66 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
         GREEN,
     ));
 
-    // .for_each(|x| log::info!("{} / {} = {}", x, NUM_ITER, x as f64 / NUM_ITER as f64));
+    // Compute expected accept rates for the accept-reject method
+    accept_rates.push((
+        (2..=10)
+            .map(|d| (d, PI.powf(d as f64/2.0) / (2_f64.powf(d as f64) * (d as f64/2.0) * util::gamma_half(d))) )
+            .collect(),
+        "Exact".to_owned(),
+        BLACK
+    ));
 
     plot_accept_rates(
-        "output/assignment3/3b_accept_rates.png",
+        "output/assignment3/3b_3c_accept_rates.png",
         "Accept rates for d = 2..10",
-        to_plot,
+        accept_rates,
     )?;
 
     Ok(())
 }
 
-fn part_3a_2d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Error>> {
+fn draw_2d_and_3d_samplings(uni: &mut Uniform701, n_iter: usize) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part 3a for 2-dimensions");
-
-    let accepted: Vec<(f64, f64)> = (0..n_iter)
-        .map(|_| RandomVec::naive_scaled(uni, 2, 2.0, -1.0))
-        .filter(|v| v.is_in_sphere(1.0))
-        .map(|v| {
-            let points = v.get().to_owned();
-            (
-                points.get(0).unwrap().to_owned(),
-                points.get(1).unwrap().to_owned(),
-            )
-        })
-        .collect();
-
     scatter_2d(
-        "output/assignment3/3a_2d.png",
+        "output/assignment3/3a_2D.png",
         "Points within sphere r = 1, dimension = 2",
         -1.0..1.0,
         -1.0..1.0,
-        accepted.to_owned(),
+        (0..n_iter)
+            .map(|_| RandomVec::naive_scaled(uni, 2, 2.0, -1.0))
+            .filter(|v| v.is_in_sphere(1.0))
+            .map(|v| {
+                let points = v.get().to_owned();
+                (
+                    points.get(0).unwrap().to_owned(),
+                    points.get(1).unwrap().to_owned(),
+                )
+            })
+            .collect::<Vec<(f64, f64)>>(),
     )?;
 
-    Ok(accepted.len())
-}
-
-fn part_3a_3d(uni: &mut Uniform701, n_iter: usize) -> Result<usize, Box<dyn Error>> {
     log::info!("Doing part 3a for 3-dimensions");
-
-    let accepted: Vec<(f64, f64, f64)> = (0..n_iter)
-        .map(|_| RandomVec::naive_scaled(uni, 3, 2.0, -1.0))
-        .filter(|v| v.is_in_sphere(1.0))
-        .map(|v| {
-            let points = v.get().to_owned();
-            (
-                points.get(0).unwrap().to_owned(),
-                points.get(1).unwrap().to_owned(),
-                points.get(2).unwrap().to_owned(),
-            )
-        })
-        .collect();
-
-    scatter_3d(
-        "output/assignment3/3a_3d.png",
+    animate_3d(
+        "output/assignment3/3a_3D.png",
         "Points within sphere r = 1, dimension = 3",
         -1.0..1.0,
         -1.0..1.0,
         -1.0..1.0,
-        accepted.to_owned(),
+        (0..n_iter)
+            .map(|_| RandomVec::naive_scaled(uni, 3, 2.0, -1.0))
+            .filter(|v| v.is_in_sphere(1.0))
+            .map(|v| {
+                let points = v.get().to_owned();
+                (
+                    points.get(0).unwrap().to_owned(),
+                    points.get(1).unwrap().to_owned(),
+                    points.get(2).unwrap().to_owned(),
+                )
+            })
+            .collect::<Vec<(f64, f64, f64)>>(),
     )?;
 
-    Ok(accepted.len())
+    Ok(())
 }
 
 fn part_3b_nd(uni: &mut Uniform701, dim: usize, n_iter: usize) -> Result<usize, Box<dyn Error>> {
@@ -121,7 +120,7 @@ fn part_3c(
 ) -> Result<usize, Box<dyn Error>> {
     log::info!("Doing part 3c for {}-dimensions", dim);
 
-    Ok((0..n_iter)
+    Ok((2..n_iter)
         .map(|_| RandomVec::efficient_scaled(uni, gaussian, dim, 2.0, -1.0))
         .filter(|v| v.is_in_sphere(1.0))
         .count())
@@ -184,6 +183,53 @@ fn scatter_3d(
     Ok(())
 }
 
+/// Draw an animated scatter plot for the supplied 3-dimensional points.
+/// The animation adjusts the matrix perspective's yaw, generating a gif instead of a png.
+/// This function is slow.
+fn animate_3d(
+    path: &str,
+    caption: &str,
+    x_range: Range<f64>,
+    y_range: Range<f64>,
+    z_range: Range<f64>,
+    points: Vec<(f64, f64, f64)>,
+) -> Result<(), Box<dyn Error>> {
+    let root = BitMapBackend::gif(path, (1440, 900), 1_000)?.into_drawing_area();
+
+    for i in 0..10 {
+        let frame = format!("Frame {}", i);
+        log::info!("{}", frame);
+        let yaw = i as f64 * 0.2;
+        root.fill(&WHITE)?;
+
+        let mut chart = ChartBuilder::on(&root)
+            .caption(
+                format!("{}, {}", caption, frame),
+                ("sans-serif", 50).into_font(),
+            )
+            .margin(32)
+            .x_label_area_size(32)
+            .y_label_area_size(32)
+            .build_cartesian_3d(x_range.to_owned(), y_range.to_owned(), z_range.to_owned())?;
+        chart.with_projection(|mut pb| {
+            pb.yaw = yaw;
+            pb.into_matrix()
+        });
+        chart.configure_axes().draw()?;
+
+        chart.draw_series(
+            points
+                .to_owned()
+                .into_iter()
+                .map(|coord| Circle::new(coord, 2, RED.filled())),
+        )?;
+
+        root.present()?;
+    }
+
+    Ok(())
+}
+
 fn plot_accept_rates(
     path: &str,
     caption: &str,
@@ -199,7 +245,7 @@ fn plot_accept_rates(
         .margin(32)
         .x_label_area_size(32)
         .y_label_area_size(32)
-        .build_cartesian_2d(1.9..10.0, 0.0..1.0)?;
+        .build_cartesian_2d(1.9..10.0, 0.0..1.01)?;
     chart.configure_mesh().disable_mesh().draw()?;
 
     for (accept_rate, curve_label, color) in to_plot {

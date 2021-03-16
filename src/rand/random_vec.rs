@@ -59,8 +59,8 @@ impl RandomVec {
         let mag = (&x).into_iter().map(|xi| xi.powi(2)).sum::<f64>().sqrt();
         let alpha = uniform.next().powf(1.0 / dim as f64);
         x.into_iter()
-            .map(|xi| xi / mag)// scale point onto surface of unit sphere
-            .map(|xi| xi * alpha)// scale point to point within unit sphere
+            .map(|xi| xi / mag) // scale point onto surface of unit sphere
+            .map(|xi| xi * alpha) // scale point to point within unit sphere
             .collect()
     }
 

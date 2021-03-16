@@ -1,7 +1,7 @@
 use plotters::prelude::*;
 
+use crate::rand::points_in_grid::{gen_points_in_box, gen_points_in_cube};
 use crate::rand::uniform::Uniform701;
-use crate::util::{distance_2d, distance_3d};
 use std::error::Error;
 use std::ops::Range;
 
@@ -40,21 +40,8 @@ fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
 fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part b");
 
-    let mut accepted: Vec<(f64, f64)> = Vec::with_capacity(n);
+    let accepted: Vec<(f64, f64)> = gen_points_in_box(uni, L, n, r_min);
 
-    for _ in 0..n {
-        let mut rejected = true;
-        while rejected {
-            let next = (uni.next() * L, uni.next() * L);
-            if let None = (&accepted)
-                .into_iter()
-                .find(|point| distance_2d(**point, next) < r_min)
-            {
-                accepted.push(next);
-                rejected = false;
-            }
-        }
-    }
     scatter_2d(
         "output/assignment2/part_2b.png",
         &format!("Assignment 2b, L = 20, n = {}, r_min = {}", n, r_min),
@@ -70,29 +57,14 @@ fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
 fn part_2c(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part c");
 
-    let mut accepted: Vec<(f64, f64, f64)> = Vec::with_capacity(n);
-
-    for _ in 0..n {
-        let mut rejected = true;
-        while rejected {
-            let next = (uni.next() * L, uni.next() * L, uni.next() * L);
-            if let None = (&accepted)
-                .into_iter()
-                .find(|point| distance_3d(**point, next) < r_min)
-            {
-                accepted.push(next);
-                rejected = false;
-            }
-        }
-    }
-    // scatter_3d(
+    // scatter_4d(
     animated_3d(
         "output/assignment2/part_2c.gif",
         &format!("Assignment 2c, L = 20, n = {}, r_min = {}", n, r_min),
         0.0..L,
         0.0..L,
         0.0..L,
-        accepted,
+        gen_points_in_cube(uni, L, n, r_min),
     )?;
     Ok(())
 }

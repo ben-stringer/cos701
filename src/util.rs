@@ -18,15 +18,19 @@ pub fn distance_3d(a: (f64, f64, f64), b: (f64, f64, f64)) -> f64 {
 /// if n is even, this function calls gamma with half of n, which is guaranteed to be a whole number.
 /// If n is odd, this function calls this function with n-2.
 pub fn gamma_half(n: usize) -> f64 {
-    if n == 1 { // i.e., gamma(1/2)
+    if n == 1 {
+        // i.e., gamma(1/2)
         PI.sqrt()
-    } else if n == 2 { // i.e., gamma(2/2) or gamma(1)
+    } else if n == 2 {
+        // i.e., gamma(2/2) or gamma(1)
         1.0
-    } else if n % 2 == 1 { // i.e., gamma(3/2), gamma(5/2), ...
+    } else if n % 2 == 1 {
+        // i.e., gamma(3/2), gamma(5/2), ...
         let numerator_minus_two_halves = n - 2;
         let n_half = numerator_minus_two_halves as f64 / 2.0;
         n_half * gamma_half(numerator_minus_two_halves)
-    } else { // i.e., gamma(4/2), gamma(6/2), ...
+    } else {
+        // i.e., gamma(4/2), gamma(6/2), ...
         let n_half = (n as f64 / 2.0).round() as usize;
         gamma(n_half)
     }
@@ -38,7 +42,7 @@ pub fn gamma(n: usize) -> f64 {
     if n == 1 {
         1.0
     } else {
-        let m = n-1;
+        let m = n - 1;
         m as f64 * gamma(m)
     }
 }

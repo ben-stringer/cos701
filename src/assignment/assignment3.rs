@@ -45,13 +45,16 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     // Compute expected accept rates for the accept-reject method using the gamma function
     accept_rates.push((
         (2..=10)
-            .map(|d| (
-                d,
-                PI.powf(d as f64/2.0) /
-                    (2_f64.powf(d as f64) * (d as f64/2.0) * util::gamma_half(d))) )
+            .map(|d| {
+                (
+                    d,
+                    PI.powf(d as f64 / 2.0)
+                        / (2_f64.powf(d as f64) * (d as f64 / 2.0) * util::gamma_half(d)),
+                )
+            })
             .collect(),
         "Exact".to_owned(),
-        BLACK
+        BLACK,
     ));
 
     plot_accept_rates(
@@ -295,7 +298,8 @@ fn plot_accept_rates(
         .x_label_area_size(32)
         .y_label_area_size(32)
         .build_cartesian_2d(1.9..10.0, 0.0..1.01)?;
-    chart.configure_mesh()
+    chart
+        .configure_mesh()
         // .disable_mesh()
         .draw()?;
 

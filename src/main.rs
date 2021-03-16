@@ -16,6 +16,8 @@ use crate::assignment::assignment1;
 use crate::assignment::assignment2;
 #[allow(unused_imports)]
 use crate::assignment::assignment3;
+#[allow(unused_imports)]
+use crate::assignment::assignment4;
 
 fn main() -> Result<(), Box<dyn Error>> {
     SimpleLogger::new().init()?;
@@ -24,9 +26,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     ensure_output_dirs_exist()?;
 
-    // assignment1::do_assignment_1()?;
-    // assignment2::do_assignment_2()?;
+    assignment1::do_assignment_1()?;
+    assignment2::do_assignment_2()?;
     assignment3::do_assignment_3()?;
+    assignment4::do_assignment_4()?;
 
     // scratch()?;
 
@@ -41,6 +44,7 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
         "output/assignment1",
         "output/assignment2",
         "output/assignment3",
+        "output/assignment4",
     ]
     .into_iter()
     .try_for_each(std::fs::create_dir_all)?;
@@ -49,8 +53,5 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
 }
 
 fn scratch() -> Result<(), Box<dyn Error>> {
-
-    (2..=10).for_each(|i| log::info!("{}: {}", i, util::gamma_half(i)));
-
     Ok(())
 }

@@ -15,7 +15,8 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     let mut uni = Uniform701::new();
     let mut gau = BoxMullerGaussian701::new(Uniform701::new());
 
-    draw_2d_and_3d_samplings(&mut uni, 10_000)?;
+    draw_2d_and_3d_naive(&mut uni, 10_000)?;
+    draw_2d_and_3d_efficient(&mut uni, 10_000)?;
 
     let mut accept_rates: Vec<(BTreeMap<usize, f64>, String, RGBColor)> = Vec::new();
 
@@ -59,11 +60,11 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn draw_2d_and_3d_samplings(uni: &mut Uniform701, n_iter: usize) -> Result<(), Box<dyn Error>> {
-    log::info!("Doing part 3a for 2-dimensions");
+fn draw_2d_and_3d_naive(uni: &mut Uniform701, n_iter: usize) -> Result<(), Box<dyn Error>> {
+    log::info!("Doing part 3a for 2-dimensions, naively");
     scatter_2d(
-        "output/assignment3/3a_2D.png",
-        "Points within sphere r = 1, dimension = 2",
+        "output/assignment3/3a_2D_naive.png",
+        "Naive, sphere r = 1, dimension = 2",
         -1.0..1.0,
         -1.0..1.0,
         (0..n_iter)
@@ -79,15 +80,60 @@ fn draw_2d_and_3d_samplings(uni: &mut Uniform701, n_iter: usize) -> Result<(), B
             .collect::<Vec<(f64, f64)>>(),
     )?;
 
-    log::info!("Doing part 3a for 3-dimensions");
+    log::info!("Doing part 3a for 3-dimensions, naively");
     animate_3d(
-        "output/assignment3/3a_3D.png",
-        "Points within sphere r = 1, dimension = 3",
+        "output/assignment3/3a_3D_naive.png",
+        "Naive sphere r = 1, dimension = 3",
         -1.0..1.0,
         -1.0..1.0,
         -1.0..1.0,
         (0..n_iter)
             .map(|_| RandomVec::naive_scaled(uni, 3, 2.0, -1.0))
+            .filter(|v| v.is_in_sphere(1.0))
+            .map(|v| {
+                let points = v.get().to_owned();
+                (
+                    points.get(0).unwrap().to_owned(),
+                    points.get(1).unwrap().to_owned(),
+                    points.get(2).unwrap().to_owned(),
+                )
+            })
+            .collect::<Vec<(f64, f64, f64)>>(),
+    )?;
+
+    Ok(())
+}
+
+fn draw_2d_and_3d_efficient(uni: &mut Uniform701, n_iter: usize) -> Result<(), Box<dyn Error>> {
+    log::info!("Doing part 3a for 2-dimensions, efficiently");
+    let mut gaussian = BoxMullerGaussian701::new(Uniform701::new());
+    scatter_2d(
+        "output/assignment3/3a_2D_efficient.png",
+        "Efficient sphere r = 1, dimension = 2",
+        -1.0..1.0,
+        -1.0..1.0,
+        (0..n_iter)
+            .map(|_| RandomVec::efficient(uni, &mut gaussian, 2))
+            .filter(|v| v.is_in_sphere(1.0))
+            .map(|v| {
+                let points = v.get().to_owned();
+                (
+                    points.get(0).unwrap().to_owned(),
+                    points.get(1).unwrap().to_owned(),
+                )
+            })
+            .collect::<Vec<(f64, f64)>>(),
+    )?;
+
+    log::info!("Doing part 3a for 3-dimensions, efficiently");
+    animate_3d(
+        "output/assignment3/3a_3D_efficient.png",
+        "Efficient sphere r = 1, dimension = 3",
+        -1.0..1.0,
+        -1.0..1.0,
+        -1.0..1.0,
+        (0..n_iter)
+            .map(|_| RandomVec::efficient_scaled(uni, &mut gaussian, 3, 2.0, -1.0))
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
                 let points = v.get().to_owned();

@@ -21,7 +21,7 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     let mut accept_rates: Vec<(BTreeMap<usize, f64>, String, RGBColor)> = Vec::new();
 
     // Compute accept rates for the accept-reject method
-    for (num_iter, color) in vec![(100, CYAN), (1000, BLUE), (10_000, RED)] {
+    for (num_iter, color) in vec![(100, CYAN), (1000, GREEN), (10_000, RED)] {
         accept_rates.push((
             (2..=10)
                 .map(|dim| (dim, part_3b_nd(&mut uni, dim, num_iter).unwrap()))
@@ -39,16 +39,16 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
             .map(|(dim, num_accepted)| (dim, num_accepted as f64 / 10_000.0))
             .collect(),
         "Efficient".to_owned(),
-        GREEN,
+        BLUE,
     ));
 
-    // Compute expected accept rates for the accept-reject method
+    // Compute expected accept rates for the accept-reject method using the gamma function
     accept_rates.push((
         (2..=10)
             .map(|d| (
                 d,
                 PI.powf(d as f64/2.0) /
-                    (2_f64.powf(d as f64) * util::gamma_half(d))) )
+                    (2_f64.powf(d as f64) * (d as f64/2.0) * util::gamma_half(d))) )
             .collect(),
         "Exact".to_owned(),
         BLACK
@@ -295,7 +295,9 @@ fn plot_accept_rates(
         .x_label_area_size(32)
         .y_label_area_size(32)
         .build_cartesian_2d(1.9..10.0, 0.0..1.01)?;
-    chart.configure_mesh().disable_mesh().draw()?;
+    chart.configure_mesh()
+        // .disable_mesh()
+        .draw()?;
 
     for (accept_rate, curve_label, color) in to_plot {
         chart

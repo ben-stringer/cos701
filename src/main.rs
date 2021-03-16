@@ -48,42 +48,9 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-// fn scratch() -> Result<(), Box<dyn Error>> {
-//     let path = "output/scratch/scratch.png";
-//     let caption = "Scratch";
-//     // let x_range = -5_f64..5_f64;
-//     let x_range = 0.0..10.0;
-//     let y_range = -1.0..1.0;
-//     let x_step = 0.1;
-//     // let curve = (-5_f64..5_f64)
-//     //     .step(0.1)
-//     //     .key_points(1_000_000)
-//     //     .into_iter()
-//     //     .map(|x| x.powi(2));
-//
-//     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
-//     root.fill(&WHITE)?;
-//
-//     let mut chart = ChartBuilder::on(&root)
-//         .caption(caption, ("sans-serif", 50).into_font())
-//         .margin(16)
-//         .x_label_area_size(30)
-//         .y_label_area_size(30)
-//         // .build_cartesian_2d(x_range.step(x_step).into_segmented(), 0_f64..10_f64)?;
-//         .build_cartesian_2d(x_range, y_range)?;
-//     chart.configure_mesh().disable_mesh().draw()?;
-//
-//     chart.draw_series(LineSeries::new(
-//         (0..100).map(|x| x as f64 / 10.0).map(|x| (x, x.sin())),
-//         &BLACK,
-//     ))?;
-//     // chart.draw_series(LineSeries::new(
-//     //     x_range
-//     //         .step(x_step)
-//     //         .key_points(1_000_000)
-//     //         .into_iter()
-//     //         .map(|x| (x, x.powi(2))),
-//     //     &BLUE,
-//     // ))?;
-//     Ok(())
-// }
+fn scratch() -> Result<(), Box<dyn Error>> {
+
+    (2..=10).for_each(|i| log::info!("{}: {}", i, util::gamma_half(i)));
+
+    Ok(())
+}

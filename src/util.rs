@@ -2,7 +2,17 @@
 
 use std::f64::consts::PI;
 
-pub const ORIGIN: (f64, f64, f64) = (0.0,0.0,0.0);
+/// Constant string to begin a latex document in standalone mode
+pub const TEX_PREFIX: &str = "\\documentclass{standalone}
+%!TEX encoding =  UTF-16
+\\usepackage{fontspec}
+\\setmainfont{Arial}
+\\setmonofont[Scale=MatchLowercase]{Andale Mono}
+\\begin{document}
+";
+
+/// Constant string to end a latex document
+pub const TEX_SUFFIX: &str = "\\end{document}";
 
 /// Calculate the 2-dimensional distance between points a and b
 pub fn distance_2d(a: (f64, f64), b: (f64, f64)) -> f64 {
@@ -12,6 +22,16 @@ pub fn distance_2d(a: (f64, f64), b: (f64, f64)) -> f64 {
 /// Calculate the 3-dimensional distance between points a and b
 pub fn distance_3d(a: (f64, f64, f64), b: (f64, f64, f64)) -> f64 {
     ((a.0 - b.0).powf(2.0) + (a.1 - b.1).powf(2.0) + (a.2 - b.2).powf(2.0)).sqrt()
+}
+
+/// Calculate the magnitude of the supplied vector, equivalent to returning distance_2d(origin, v)
+pub fn magnitude_2d(v: (f64, f64)) -> f64 {
+    (v.0.powf(2.0) + v.1.powf(2.0)).sqrt()
+}
+
+/// Calculate the magnitude of the supplied vector, equivalent to returning distance_3d(origin, v)
+pub fn magnitude_3d(v: (f64, f64, f64)) -> f64 {
+    (v.0.powf(2.0) + v.1.powf(2.0) + v.2.powf(2.0)).sqrt()
 }
 
 /// Calculate the gamma for half of the supplied positive whole number.

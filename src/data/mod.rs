@@ -1,1 +1,1 @@
-pub(crate) mod nn_map;
+pub(crate) mod neighbors;

@@ -50,8 +50,6 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
     .into_iter()
     .try_for_each(std::fs::create_dir_all)?;
 
-    std::fs::copy("templates/neighbors.tex", "output/assignment4/neighbors.tex")?;
-
     Ok(())
 }
 

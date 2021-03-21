@@ -9,9 +9,9 @@ pub(crate) struct NearestNeighborMap {
 }
 
 impl NearestNeighborMap {
-    pub fn from(sites: &Vec<(f64, f64, f64)>, r_cutoff: f64) -> Self {
+    pub fn first(sites: &Vec<(f64, f64, f64)>, r_cutoff: f64) -> Self {
         let n = sites.len();
-        let mut neighbors: Vec<Vec<usize>> = (0..n).map(|_| Vec::new()).collect();
+        let mut neighbors = vec![vec![]; n];
 
         for i in 0..n - 1 {
             let site_i = sites[i];
@@ -25,6 +25,29 @@ impl NearestNeighborMap {
         }
 
         Self { neighbors }
+    }
+
+    pub fn second(first_neighbors: &Self) -> Self {
+        let n = first_neighbors.neighbors.len();
+        let mut second_neighbors = vec![vec![]; n];
+
+        for i in 0..n {
+            let first_neighbors_i = &first_neighbors.neighbors[i];
+            for j in first_neighbors_i {
+                for k in &first_neighbors.neighbors[*j] {
+                    if !(i == *k
+                        || first_neighbors_i.contains(k)
+                        || second_neighbors[i].contains(k))
+                    {
+                        second_neighbors[i].push(k.to_owned());
+                    }
+                }
+            }
+        }
+
+        Self {
+            neighbors: second_neighbors,
+        }
     }
 
     pub fn print_latex(&self, to_file: &str) -> Result<(), Box<dyn Error>> {

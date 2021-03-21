@@ -24,7 +24,7 @@ pub fn do_assignment_4() -> Result<(), Box<dyn Error>> {
 fn part_4a(sites: &Vec<(f64, f64, f64)>) -> Result<NearestNeighborMap, Box<dyn Error>> {
     log::info!("Doing part a");
 
-    let nn_map = NearestNeighborMap::from(sites, 3.0);
+    let nn_map = NearestNeighborMap::first(sites, 3.0);
     nn_map.print_latex("output/assignment4/first_neighbors.tex")?;
     nn_map.print_csv("output/assignment4/first_neighbors.csv")?;
 
@@ -40,6 +40,12 @@ fn part_4b(nn_map: &NearestNeighborMap) -> Result<AdjacencyMatrix, Box<dyn Error
     Ok(adj_mat)
 }
 
-fn part_4c(nn_map: &NearestNeighborMap) -> Result<AdjacencyMatrix, Box<dyn Error>> {
-    Err(From::from("Not implemented"))
+fn part_4c(first_neighbors: &NearestNeighborMap) -> Result<(), Box<dyn Error>> {
+    log::info!("Doing part c");
+
+    let second_neighbors = NearestNeighborMap::second(first_neighbors);
+    second_neighbors.print_latex("output/assignment4/second_neighbors.tex")?;
+    second_neighbors.print_csv("output/assignment4/second_neighbors.csv")?;
+
+    Ok(())
 }

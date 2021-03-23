@@ -3,7 +3,6 @@ use crate::rand::uniform::Uniform701;
 
 pub(crate) struct RandomVec {
     v: Vec<f64>,
-    dim: usize,
 }
 
 impl RandomVec {
@@ -21,7 +20,6 @@ impl RandomVec {
             v: (0..dim)
                 .map(|_| uniform.next() * scale_by + shift_by)
                 .collect(),
-            dim,
         }
     }
 
@@ -42,7 +40,6 @@ impl RandomVec {
     ) -> Self {
         Self {
             v: Self::gen_efficient_vec(uniform, gaussian, dim, scale_by, shift_by),
-            dim,
         }
     }
 
@@ -73,7 +70,7 @@ impl RandomVec {
             .into_iter()
             .map(|i| i.powf(2.0))
             .sum::<f64>()
-            .powf(1.0 / self.dim as f64)
+            .powf(1.0 / self.v.len() as f64)
             <= radius
     }
 }

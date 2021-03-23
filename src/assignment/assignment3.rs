@@ -1,7 +1,7 @@
 use plotters::prelude::*;
 
-use crate::rand::boxmuller::BoxMullerGaussian701;
 use crate::data::random_vec::RandomVec;
+use crate::rand::boxmuller::BoxMullerGaussian701;
 use crate::rand::uniform::Uniform701;
 use crate::util;
 use std::collections::BTreeMap;

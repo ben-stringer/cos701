@@ -97,6 +97,16 @@ impl NearestNeighborMap {
         }
         Ok(())
     }
+
+    pub fn print_txt(
+        &self,
+        &sites: Vec<(f64, f64, f64)>,
+        to_file: &str,
+    ) -> Result<(), Box<dyn Error>> {
+        let mut of = File::create(to_file)?;
+
+        Ok(())
+    }
 }
 
 pub(crate) struct AdjacencyMatrix {

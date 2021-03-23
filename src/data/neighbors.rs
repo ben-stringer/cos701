@@ -99,11 +99,40 @@ impl NearestNeighborMap {
     }
 
     pub fn print_txt(
-        &self,
-        &sites: Vec<(f64, f64, f64)>,
+        sites: &Vec<(f64, f64, f64)>,
+        first_neighbors: &NearestNeighborMap,
+        second_neighbors: &NearestNeighborMap,
         to_file: &str,
     ) -> Result<(), Box<dyn Error>> {
         let mut of = File::create(to_file)?;
+
+        for i in 0..sites.len() {
+            let site_i = sites[i];
+            let first_i = &first_neighbors.neighbors[i];
+            let second_i = &second_neighbors.neighbors[i];
+            of.write(
+                format!(
+                    "{} {} {} {} {} {} {} {}\n",
+                    i,
+                    site_i.0,
+                    site_i.1,
+                    site_i.2,
+                    first_i.len(),
+                    first_i
+                        .into_iter()
+                        .map(|v| v.to_string())
+                        .collect::<Vec<String>>()
+                        .join(" "),
+                    second_i.len(),
+                    second_i
+                        .into_iter()
+                        .map(|v| v.to_string())
+                        .collect::<Vec<String>>()
+                        .join(" ")
+                )
+                .as_ref(),
+            )?;
+        }
 
         Ok(())
     }

@@ -14,9 +14,16 @@ pub fn do_assignment_4() -> Result<(), Box<dyn Error>> {
     let mut sites = gen_points_in_cube(&mut uni, L, 500, 2.0);
     sites.sort_by(|l, r| magnitude_3d(*l).partial_cmp(&magnitude_3d(*r)).unwrap());
 
-    let nn_map = part_4a(&sites)?;
-    part_4b(&nn_map)?;
-    part_4c(&nn_map)?;
+    let first_neighbors = part_4a(&sites)?;
+    part_4b(&first_neighbors)?;
+    let second_neighbors = part_4c(&first_neighbors)?;
+
+    NearestNeighborMap::print_txt(
+        &sites,
+        &first_neighbors,
+        &second_neighbors,
+        "output/assignment4/sites_first_second.txt",
+    )?;
 
     Ok(())
 }
@@ -40,12 +47,12 @@ fn part_4b(nn_map: &NearestNeighborMap) -> Result<AdjacencyMatrix, Box<dyn Error
     Ok(adj_mat)
 }
 
-fn part_4c(first_neighbors: &NearestNeighborMap) -> Result<(), Box<dyn Error>> {
+fn part_4c(first_neighbors: &NearestNeighborMap) -> Result<NearestNeighborMap, Box<dyn Error>> {
     log::info!("Doing part c");
 
     let second_neighbors = NearestNeighborMap::second(first_neighbors);
     second_neighbors.print_latex("output/assignment4/second_neighbors.tex")?;
     second_neighbors.print_csv("output/assignment4/second_neighbors.csv")?;
 
-    Ok(())
+    Ok(second_neighbors)
 }

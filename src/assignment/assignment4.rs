@@ -15,7 +15,7 @@ pub fn do_assignment_4() -> Result<(), Box<dyn Error>> {
     sites.sort_by(|l, r| magnitude_3d(*l).partial_cmp(&magnitude_3d(*r)).unwrap());
 
     let first_neighbors = part_4a(&sites)?;
-    part_4b(&first_neighbors)?;
+    let first_adj = part_4b(&first_neighbors)?;
     let second_neighbors = part_4c(&first_neighbors)?;
 
     NearestNeighborMap::print_txt(

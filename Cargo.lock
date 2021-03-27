@@ -202,6 +202,7 @@ name = "cos_701"
 version = "0.1.0"
 dependencies = [
  "conv",
+ "delaunator",
  "log",
  "num",
  "plotters",
@@ -254,6 +255,12 @@ dependencies = [
  "adler32",
  "byteorder",
 ]
+
+[[package]]
+name = "delaunator"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3dd9122b66dafadfbc335c706ff5acac5350d1eb799a56c1bac41825e762ddc"
 
 [[package]]
 name = "dirs"

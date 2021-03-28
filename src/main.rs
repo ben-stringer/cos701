@@ -57,6 +57,14 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn scratch() -> Result<(), Box<dyn Error>> {
-    Ok(())
-}
+// fn scratch() -> Result<(), Box<dyn Error>> {
+//     let a = (1.0, 0.0);
+//     let b = (0.0, 1.0);
+//     let c = (-1.0, 0.0);
+//
+//     let (z, r) = util::circle_through(&a, &b, &c);
+//
+//     log::info!("Center point: ({}, {}), radius: {}", z.0, z.1, r);
+//
+//     Ok(())
+// }

@@ -1,15 +1,33 @@
-use crate::util::{distance_3d, TEX_PREFIX, TEX_SUFFIX};
+use crate::util::{distance_2d, distance_3d, TEX_PREFIX, TEX_SUFFIX};
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
 
 /// A nearest neighbor map for 3-D points.
 pub(crate) struct NearestNeighborMap {
-    neighbors: Vec<Vec<usize>>,
+    pub neighbors: Vec<Vec<usize>>,
 }
 
 impl NearestNeighborMap {
-    pub fn first(sites: &Vec<(f64, f64, f64)>, r_cutoff: f64) -> Self {
+    pub fn first_2d(sites: &Vec<(f64, f64)>, r_cutoff: f64) -> Self {
+        let n = sites.len();
+        let mut neighbors = vec![vec![]; n];
+
+        for i in 0..n - 1 {
+            let site_i = sites[i];
+            for j in i + 1..n {
+                let site_j = sites[j];
+                if distance_2d(site_i, site_j) < r_cutoff {
+                    neighbors[i].push(j);
+                    neighbors[j].push(i);
+                }
+            }
+        }
+
+        Self { neighbors }
+    }
+
+    pub fn first_3d(sites: &Vec<(f64, f64, f64)>, r_cutoff: f64) -> Self {
         let n = sites.len();
         let mut neighbors = vec![vec![]; n];
 

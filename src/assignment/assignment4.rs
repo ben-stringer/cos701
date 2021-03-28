@@ -31,7 +31,7 @@ pub fn do_assignment_4() -> Result<(), Box<dyn Error>> {
 fn part_4a(sites: &Vec<(f64, f64, f64)>) -> Result<NearestNeighborMap, Box<dyn Error>> {
     log::info!("Doing part a");
 
-    let nn_map = NearestNeighborMap::first(sites, 3.0);
+    let nn_map = NearestNeighborMap::first_3d(sites, 3.0);
     nn_map.print_latex("output/assignment4/first_neighbors.tex")?;
     nn_map.print_csv("output/assignment4/first_neighbors.csv")?;
 

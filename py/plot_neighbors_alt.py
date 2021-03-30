@@ -44,11 +44,16 @@ if __name__ == '__main__':
     y = []
     z = []
 
-    site_250 = sites['250']
-    site_250_sn = site_250['second_neighbors']
-    site_250_fn = site_250['first_neighbors']
+    # Pick an arbitrary point of interest
+    poi_id = '250'
+    poi = sites[poi_id]
+    poi_fn = poi['first_neighbors']
+    poi_sn = poi['second_neighbors']
+
+    # Plot all sites except the poi  or the first or second neighbors of poi
+    # Those will be plotted separately
     for site_id in sites:
-        if site_id == '250' or site_id in site_250_fn or site_id in site_250_sn:
+        if site_id == poi_id or site_id in poi_fn or site_id in poi_sn:
             continue
         site = sites[site_id]
         x.append(float(site['x']))
@@ -57,27 +62,32 @@ if __name__ == '__main__':
     ax1 = fig.add_subplot(111, projection='3d')
     ax1.scatter(x, y, z, color='black', marker='.')
 
-    ax1.scatter(float(site_250['x']), float(site_250['y']), float(site_250['z']), color='blue', marker='h')
+    # Now plot the poi
+    ax1.scatter(float(poi['x']), float(poi['y']), float(poi['z']), color='blue', marker='h')
 
+    # Plot the first neighbors of poi
     x.clear()
     y.clear()
     z.clear()
-    for site_id in site_250_fn:
+    for site_id in poi_fn:
         site = sites[site_id]
         x.append(float(site['x']))
         y.append(float(site['y']))
         z.append(float(site['z']))
     ax1.scatter(x, y, z, color='red', marker='s')
+    # TODO draw line between poi and first neighbors
 
+    # Plot the second neighbors of poi
     x.clear()
     y.clear()
     z.clear()
-    for site_id in site_250_sn:
+    for site_id in poi_sn:
         site = sites[site_id]
         x.append(float(site['x']))
         y.append(float(site['y']))
         z.append(float(site['z']))
     ax1.scatter(x, y, z, color='green', marker='D')
+    # TODO draw line between poi and second neighbors
 
     print("Showing plot")
     plt.show()

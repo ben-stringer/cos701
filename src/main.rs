@@ -21,9 +21,14 @@ use crate::assignment::assignment3;
 use crate::assignment::assignment4;
 #[allow(unused_imports)]
 use crate::assignment::assignment5;
+#[allow(unused_imports)]
+use crate::assignment::assignment6;
+use log::LevelFilter::Warn;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    SimpleLogger::new().init()?;
+    SimpleLogger::new()
+        .with_module_level("voronoi", Warn)
+        .init()?;
 
     log::info!("Hello world");
 
@@ -33,7 +38,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // assignment2::do_assignment_2()?;
     // assignment3::do_assignment_3()?;
     // assignment4::do_assignment_4()?;
-    assignment5::do_assignment_5()?;
+    // assignment5::do_assignment_5()?;
+    assignment6::do_assignment_6()?;
 
     // scratch()?;
 
@@ -50,6 +56,7 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
         "output/assignment3",
         "output/assignment4",
         "output/assignment5",
+        "output/assignment6",
     ]
     .into_iter()
     .try_for_each(std::fs::create_dir_all)?;

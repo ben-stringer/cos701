@@ -40,7 +40,7 @@ fn do_part_a(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
 
     plot_triangulation(
         "output/assignment5/part_5a.png",
-        "Using built-in triangulation",
+        "Using Delaunay triangulation library",
         sites,
         &lines,
     )?;
@@ -82,7 +82,7 @@ fn do_part_b(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
 
     plot_triangulation(
         "output/assignment5/part_5b.png",
-        "Homemade Delauney Triangulation",
+        "Homemade Delaunay Triangulation",
         sites,
         &lines,
     )?;
@@ -96,6 +96,8 @@ fn plot_triangulation(
     sites: &Vec<(f64, f64)>,
     lines: &Vec<(usize, usize)>,
 ) -> Result<(), Box<dyn Error>> {
+    log::info!("Plotting {}", &caption);
+
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;
 

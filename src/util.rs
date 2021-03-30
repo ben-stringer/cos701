@@ -94,24 +94,10 @@ pub fn circle_through(p1: (f64, f64), p2: (f64, f64), p3: (f64, f64)) -> ((f64, 
     let zy = -c / (2.0 * a);
     let r = ((zx - x1).powf(2.0) + (zy - y1).powf(2.0)).sqrt();
 
-    //(b.powf(2.0) + c.powf(2.0) - 4.0 * a * d) / (4.0 * a.powf(2.0)).sqrt();
-
     ((zx, zy), r)
 }
 
 /// Determine whether the supplied point is within the circle centered at center and with radius r
 pub fn point_in_circle(point: (f64, f64), center: (f64, f64), r: f64) -> bool {
-    let result = distance_2d(point, center) < r;
-
-    // log::trace!(
-    //     "Point ({},{}) in circle with center ({},{}) and radius {}? {}",
-    //     point.0,
-    //     point.1,
-    //     center.0,
-    //     center.1,
-    //     r,
-    //     result
-    // );
-
-    result
+    distance_2d(point, center) < r
 }

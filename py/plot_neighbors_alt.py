@@ -43,36 +43,41 @@ if __name__ == '__main__':
     x = []
     y = []
     z = []
+
+    site_250 = sites['250']
+    site_250_sn = site_250['second_neighbors']
+    site_250_fn = site_250['first_neighbors']
     for site_id in sites:
+        if site_id == '250' or site_id in site_250_fn or site_id in site_250_sn:
+            continue
         site = sites[site_id]
         x.append(float(site['x']))
         y.append(float(site['y']))
         z.append(float(site['z']))
+    ax1 = fig.add_subplot(111, projection='3d')
+    ax1.scatter(x, y, z, color='black', marker='.')
 
-    ax1 = fig.add_subplot(121, projection='3d')
-    ax1.scatter(x, y, z, color='black')
+    ax1.scatter(float(site_250['x']), float(site_250['y']), float(site_250['z']), color='blue', marker='h')
 
-    for site_id in sites:
+    x.clear()
+    y.clear()
+    z.clear()
+    for site_id in site_250_fn:
         site = sites[site_id]
-        for fn_id in site['first_neighbors']:
-            fn = sites[fn_id]
-            ax1.plot(
-                [float(site['x']), float(fn['x'])],
-                [float(site['y']), float(fn['y'])],
-                [float(site['z']), float(fn['z'])],
-                color='blue')
+        x.append(float(site['x']))
+        y.append(float(site['y']))
+        z.append(float(site['z']))
+    ax1.scatter(x, y, z, color='red', marker='s')
 
-    ax2 = fig.add_subplot(122, projection='3d')
-    ax2.scatter(x, y, z, color='black')
-    for site_id in sites:
+    x.clear()
+    y.clear()
+    z.clear()
+    for site_id in site_250_sn:
         site = sites[site_id]
-        for sn_id in site['second_neighbors']:
-            sn = sites[sn_id]
-            ax2.plot(
-                [float(site['x']), float(sn['x'])],
-                [float(site['y']), float(sn['y'])],
-                [float(site['z']), float(sn['z'])],
-                color='red')
+        x.append(float(site['x']))
+        y.append(float(site['y']))
+        z.append(float(site['z']))
+    ax1.scatter(x, y, z, color='green', marker='D')
 
     print("Showing plot")
     plt.show()

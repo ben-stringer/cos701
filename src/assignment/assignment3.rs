@@ -1,5 +1,6 @@
 use plotters::prelude::*;
 
+use crate::data::point::{Point2d, Point3d};
 use crate::data::random_vec::RandomVec;
 use crate::rand::boxmuller::BoxMullerGaussian701;
 use crate::rand::uniform::Uniform701;
@@ -78,12 +79,12 @@ fn draw_2d_and_3d_naive(uni: &mut Uniform701, n_iter: usize) -> Result<(), Box<d
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
                 let points = v.get().to_owned();
-                (
-                    points.get(0).unwrap().to_owned(),
-                    points.get(1).unwrap().to_owned(),
-                )
+                Point2d {
+                    x: points.get(0).unwrap().to_owned(),
+                    y: points.get(1).unwrap().to_owned(),
+                }
             })
-            .collect::<Vec<(f64, f64)>>(),
+            .collect::<Vec<Point2d>>(),
     )?;
 
     log::info!("Doing part 3a for 3-dimensions, naively");
@@ -98,13 +99,13 @@ fn draw_2d_and_3d_naive(uni: &mut Uniform701, n_iter: usize) -> Result<(), Box<d
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
                 let points = v.get().to_owned();
-                (
-                    points.get(0).unwrap().to_owned(),
-                    points.get(1).unwrap().to_owned(),
-                    points.get(2).unwrap().to_owned(),
-                )
+                Point3d {
+                    x: points.get(0).unwrap().to_owned(),
+                    y: points.get(1).unwrap().to_owned(),
+                    z: points.get(2).unwrap().to_owned(),
+                }
             })
-            .collect::<Vec<(f64, f64, f64)>>(),
+            .collect::<Vec<Point3d>>(),
     )?;
 
     Ok(())
@@ -123,12 +124,12 @@ fn draw_2d_and_3d_efficient(uni: &mut Uniform701, n_iter: usize) -> Result<(), B
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
                 let points = v.get().to_owned();
-                (
-                    points.get(0).unwrap().to_owned(),
-                    points.get(1).unwrap().to_owned(),
-                )
+                Point2d {
+                    x: points.get(0).unwrap().to_owned(),
+                    y: points.get(1).unwrap().to_owned(),
+                }
             })
-            .collect::<Vec<(f64, f64)>>(),
+            .collect::<Vec<Point2d>>(),
     )?;
 
     log::info!("Doing part 3a for 3-dimensions, efficiently");
@@ -143,13 +144,13 @@ fn draw_2d_and_3d_efficient(uni: &mut Uniform701, n_iter: usize) -> Result<(), B
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
                 let points = v.get().to_owned();
-                (
-                    points.get(0).unwrap().to_owned(),
-                    points.get(1).unwrap().to_owned(),
-                    points.get(2).unwrap().to_owned(),
-                )
+                Point3d {
+                    x: points.get(0).unwrap().to_owned(),
+                    y: points.get(1).unwrap().to_owned(),
+                    z: points.get(2).unwrap().to_owned(),
+                }
             })
-            .collect::<Vec<(f64, f64, f64)>>(),
+            .collect::<Vec<Point3d>>(),
     )?;
 
     Ok(())
@@ -184,7 +185,7 @@ fn scatter_2d<'a>(
     caption: &str,
     x_range: Range<f64>,
     y_range: Range<f64>,
-    points: impl IntoIterator<Item = (f64, f64)>,
+    points: impl IntoIterator<Item = Point2d>,
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (900, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -200,7 +201,7 @@ fn scatter_2d<'a>(
     chart.draw_series(
         points
             .into_iter()
-            .map(|coord| Circle::new(coord, 2, RED.filled())),
+            .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
     )?;
 
     Ok(())
@@ -213,7 +214,7 @@ fn scatter_3d(
     x_range: Range<f64>,
     y_range: Range<f64>,
     z_range: Range<f64>,
-    points: Vec<(f64, f64, f64)>,
+    points: Vec<Point3d>,
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (900, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -229,7 +230,7 @@ fn scatter_3d(
     chart.draw_series(
         points
             .into_iter()
-            .map(|coord| Circle::new(coord, 2, RED.filled())),
+            .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
     )?;
 
     Ok(())
@@ -244,7 +245,7 @@ fn animate_3d(
     x_range: Range<f64>,
     y_range: Range<f64>,
     z_range: Range<f64>,
-    points: Vec<(f64, f64, f64)>,
+    points: Vec<Point3d>,
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::gif(path, (1440, 900), 1_000)?.into_drawing_area();
 
@@ -273,7 +274,7 @@ fn animate_3d(
             points
                 .to_owned()
                 .into_iter()
-                .map(|coord| Circle::new(coord, 2, RED.filled())),
+                .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
         )?;
 
         root.present()?;

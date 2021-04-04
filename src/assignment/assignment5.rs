@@ -1,6 +1,7 @@
 use plotters::prelude::*;
 
 use crate::data::neighbors::NearestNeighborMap;
+use crate::data::point::Point2d;
 use crate::rand::points_in_grid::gen_points_in_box;
 use crate::rand::uniform::Uniform701;
 use crate::util::{circle_through, point_in_circle};
@@ -19,12 +20,12 @@ pub fn do_assignment_5() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn do_part_a(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
+fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part a");
 
     let wrapped_points = &sites
         .into_iter()
-        .map(|(x, y)| delaunator::Point { x: *x, y: *y })
+        .map(|&v| delaunator::Point { x: v.x, y: v.y })
         .collect::<Vec<delaunator::Point>>();
 
     let mut lines = delaunator::triangulate(wrapped_points)
@@ -48,7 +49,7 @@ fn do_part_a(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn do_part_b(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
+fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part b");
 
     let first_neighbors = NearestNeighborMap::first_2d(sites, 4.0);
@@ -93,7 +94,7 @@ fn do_part_b(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
 fn plot_triangulation(
     path: &str,
     caption: &str,
-    sites: &Vec<(f64, f64)>,
+    sites: &Vec<Point2d>,
     lines: &Vec<(usize, usize)>,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting {}", &caption);
@@ -112,7 +113,7 @@ fn plot_triangulation(
     if let Err(err) = chart.draw_series(
         (&sites)
             .into_iter()
-            .map(|coord| Circle::new(*coord, 2, BLACK.filled())),
+            .map(|&coord| Circle::new(coord.into(), 2, BLACK.filled())),
     ) {
         log::error!("Error occurred drawing sites!  Details: {:?}", err);
     }
@@ -121,9 +122,10 @@ fn plot_triangulation(
         .into_iter()
         .map(|(src, dst)| (sites[*src], sites[*dst]))
         .for_each(|(src, dst)| {
-            if let Err(err) =
-                chart.draw_series(LineSeries::new(vec![src.to_owned(), dst.to_owned()], &BLUE))
-            {
+            if let Err(err) = chart.draw_series(LineSeries::new(
+                vec![src.to_owned().into(), dst.to_owned().into()],
+                &BLUE,
+            )) {
                 log::error!("Error occurred drawing a line!  Details: {:?}", err);
             }
         });

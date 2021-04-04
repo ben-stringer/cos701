@@ -1,3 +1,4 @@
+use crate::data::point::{Point2d, Point3d};
 use crate::util::{distance_2d, distance_3d, TEX_PREFIX, TEX_SUFFIX};
 use std::error::Error;
 use std::fs::File;
@@ -9,7 +10,7 @@ pub(crate) struct NearestNeighborMap {
 }
 
 impl NearestNeighborMap {
-    pub fn first_2d(sites: &Vec<(f64, f64)>, r_cutoff: f64) -> Self {
+    pub fn first_2d(sites: &Vec<Point2d>, r_cutoff: f64) -> Self {
         let n = sites.len();
         let mut neighbors = vec![vec![]; n];
 
@@ -27,7 +28,7 @@ impl NearestNeighborMap {
         Self { neighbors }
     }
 
-    pub fn first_3d(sites: &Vec<(f64, f64, f64)>, r_cutoff: f64) -> Self {
+    pub fn first_3d(sites: &Vec<Point3d>, r_cutoff: f64) -> Self {
         let n = sites.len();
         let mut neighbors = vec![vec![]; n];
 
@@ -117,7 +118,7 @@ impl NearestNeighborMap {
     }
 
     pub fn print_txt(
-        sites: &Vec<(f64, f64, f64)>,
+        sites: &Vec<Point3d>,
         first_neighbors: &NearestNeighborMap,
         second_neighbors: &NearestNeighborMap,
         to_file: &str,
@@ -132,9 +133,9 @@ impl NearestNeighborMap {
                 format!(
                     "{} {} {} {} {} {} {} {}\n",
                     i,
-                    site_i.0,
-                    site_i.1,
-                    site_i.2,
+                    site_i.x,
+                    site_i.y,
+                    site_i.z,
                     first_i.len(),
                     first_i
                         .into_iter()

@@ -2,7 +2,9 @@ use ordered_float::OrderedFloat;
 use plotters::prelude::*;
 use voronoi::{make_polygons, voronoi, Point};
 
+use crate::data::line::Line2d;
 use crate::data::neighbors::NearestNeighborMap;
+use crate::data::point::Point2d;
 use crate::rand::points_in_grid::gen_points_in_box;
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
@@ -21,7 +23,7 @@ pub fn do_assignment_6() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn do_part_a(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
+fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part a");
 
     plot_voronoi_diagram(
@@ -31,7 +33,7 @@ fn do_part_a(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
         &make_polygons(&voronoi(
             sites
                 .into_iter()
-                .map(|&(x, y)| Point::new(x, y))
+                .map(|&v| Point::new(v.x, v.y))
                 .collect::<Vec<Point>>(),
             800.0,
         ))
@@ -50,7 +52,7 @@ fn do_part_a(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
             let sy = src.1;
             let dx = dst.0;
             let dy = dst.1;
-            ((sx.0, sy.0), (dx.0, dy.0))
+            Line2d::from(((sx.0, sy.0), (dx.0, dy.0)))
         })
         .collect(),
     )?;
@@ -58,15 +60,15 @@ fn do_part_a(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn do_part_b(sites: &Vec<(f64, f64)>) -> Result<(), Box<dyn Error>> {
+fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
 fn plot_voronoi_diagram(
     path: &str,
     caption: &str,
-    sites: &Vec<(f64, f64)>,
-    lines: &Vec<((f64, f64), (f64, f64))>,
+    sites: &Vec<Point2d>,
+    lines: &Vec<Line2d>,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting {}", &caption);
 
@@ -84,18 +86,22 @@ fn plot_voronoi_diagram(
     if let Err(err) = chart.draw_series(
         (&sites)
             .into_iter()
-            .map(|coord| Circle::new(*coord, 2, BLACK.filled())),
+            .map(|&coord| Circle::new(coord.into(), 2, BLACK.filled())),
     ) {
         log::error!("Error occurred drawing sites!  Details: {:?}", err);
     }
 
-    lines.into_iter().for_each(|(src, dst)| {
-        if let Err(err) =
-            chart.draw_series(LineSeries::new(vec![src.to_owned(), dst.to_owned()], &BLUE))
-        {
-            log::error!("Error occurred drawing a line!  Details: {:?}", err);
-        }
-    });
+    lines
+        .into_iter()
+        .map(|line| (line.src, line.dst))
+        .for_each(|(src, dst)| {
+            if let Err(err) = chart.draw_series(LineSeries::new(
+                vec![src.to_owned().into(), dst.to_owned().into()],
+                &BLUE,
+            )) {
+                log::error!("Error occurred drawing a line!  Details: {:?}", err);
+            }
+        });
 
     Ok(())
 }

@@ -1,5 +1,6 @@
 //! Various utility functions
 
+use crate::data::point::{Point2d, Point3d};
 use std::f64::consts::PI;
 
 /// Constant string to begin a latex document in standalone mode
@@ -15,23 +16,23 @@ pub const TEX_PREFIX: &str = "\\documentclass{standalone}
 pub const TEX_SUFFIX: &str = "\\end{document}";
 
 /// Calculate the 2-dimensional distance between points a and b
-pub fn distance_2d(a: (f64, f64), b: (f64, f64)) -> f64 {
-    ((a.0 - b.0).powf(2.0) + (a.1 - b.1).powf(2.0)).sqrt()
+pub fn distance_2d(a: Point2d, b: Point2d) -> f64 {
+    ((a.x - b.x).powf(2.0) + (a.y - b.y).powf(2.0)).sqrt()
 }
 
 /// Calculate the 3-dimensional distance between points a and b
-pub fn distance_3d(a: (f64, f64, f64), b: (f64, f64, f64)) -> f64 {
-    ((a.0 - b.0).powf(2.0) + (a.1 - b.1).powf(2.0) + (a.2 - b.2).powf(2.0)).sqrt()
+pub fn distance_3d(a: Point3d, b: Point3d) -> f64 {
+    ((a.x - b.x).powf(2.0) + (a.y - b.y).powf(2.0) + (a.z - b.z).powf(2.0)).sqrt()
 }
 
 /// Calculate the magnitude of the supplied vector, equivalent to returning distance_2d(origin, v)
-pub fn magnitude_2d(v: (f64, f64)) -> f64 {
-    (v.0.powf(2.0) + v.1.powf(2.0)).sqrt()
+pub fn magnitude_2d(v: Point2d) -> f64 {
+    (v.x.powf(2.0) + v.y.powf(2.0)).sqrt()
 }
 
 /// Calculate the magnitude of the supplied vector, equivalent to returning distance_3d(origin, v)
-pub fn magnitude_3d(v: (f64, f64, f64)) -> f64 {
-    (v.0.powf(2.0) + v.1.powf(2.0) + v.2.powf(2.0)).sqrt()
+pub fn magnitude_3d(v: Point3d) -> f64 {
+    (v.x.powf(2.0) + v.y.powf(2.0) + v.z.powf(2.0)).sqrt()
 }
 
 /// Calculate the gamma for half of the supplied positive whole number.
@@ -71,10 +72,10 @@ pub fn gamma(n: usize) -> f64 {
 
 /// Calculate a circle passing through points a, b, and c.
 /// Return the center of the circle and the radius.
-pub fn circle_through(p1: (f64, f64), p2: (f64, f64), p3: (f64, f64)) -> ((f64, f64), f64) {
-    let (x1, y1) = p1;
-    let (x2, y2) = p2;
-    let (x3, y3) = p3;
+pub fn circle_through(p1: Point2d, p2: Point2d, p3: Point2d) -> (Point2d, f64) {
+    let (x1, y1) = p1.into();
+    let (x2, y2) = p2.into();
+    let (x3, y3) = p3.into();
 
     let x12 = x1.powf(2.0);
     let y12 = y1.powf(2.0);
@@ -94,10 +95,10 @@ pub fn circle_through(p1: (f64, f64), p2: (f64, f64), p3: (f64, f64)) -> ((f64, 
     let zy = -c / (2.0 * a);
     let r = ((zx - x1).powf(2.0) + (zy - y1).powf(2.0)).sqrt();
 
-    ((zx, zy), r)
+    (Point2d::from((zx, zy)), r)
 }
 
 /// Determine whether the supplied point is within the circle centered at center and with radius r
-pub fn point_in_circle(point: (f64, f64), center: (f64, f64), r: f64) -> bool {
+pub fn point_in_circle(point: Point2d, center: Point2d, r: f64) -> bool {
     distance_2d(point, center) < r
 }

@@ -1,5 +1,6 @@
 use plotters::prelude::*;
 
+use crate::data::point::{Point2d, Point3d};
 use crate::rand::points_in_grid::{gen_points_in_box, gen_points_in_cube};
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
@@ -30,7 +31,7 @@ fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
         "Assignment 2a, L = 20, n = 500",
         0.0..L,
         0.0..L,
-        (0..n).map(|_| (uni.next() * L, uni.next() * L)),
+        (0..n).map(|_| From::from((uni.next() * L, uni.next() * L))),
     )?;
     Ok(())
 }
@@ -40,7 +41,10 @@ fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
 fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part b");
 
-    let accepted: Vec<(f64, f64)> = gen_points_in_box(uni, L, n, r_min);
+    let accepted: Vec<Point2d> = gen_points_in_box(uni, L, n, r_min)
+        .into_iter()
+        .map(|coord| From::from(coord))
+        .collect();
 
     scatter_2d(
         "output/assignment2/part_2b.png",
@@ -75,7 +79,7 @@ fn scatter_2d<'a>(
     caption: &str,
     x_range: Range<f64>,
     y_range: Range<f64>,
-    points: impl IntoIterator<Item = (f64, f64)>,
+    points: impl IntoIterator<Item = Point2d>,
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -91,7 +95,7 @@ fn scatter_2d<'a>(
     chart.draw_series(
         points
             .into_iter()
-            .map(|coord| Circle::new(coord, 2, RED.filled())),
+            .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
     )?;
 
     Ok(())
@@ -104,7 +108,7 @@ fn scatter_3d(
     x_range: Range<f64>,
     y_range: Range<f64>,
     z_range: Range<f64>,
-    points: Vec<(f64, f64, f64)>,
+    points: Vec<Point3d>,
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -120,7 +124,7 @@ fn scatter_3d(
     chart.draw_series(
         points
             .into_iter()
-            .map(|coord| Circle::new(coord, 2, RED.filled())),
+            .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
     )?;
 
     Ok(())
@@ -135,7 +139,7 @@ fn animated_3d(
     x_range: Range<f64>,
     y_range: Range<f64>,
     z_range: Range<f64>,
-    points: Vec<(f64, f64, f64)>,
+    points: Vec<Point3d>,
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::gif(path, (1440, 900), 1_000)?.into_drawing_area();
 
@@ -164,7 +168,7 @@ fn animated_3d(
             points
                 .to_owned()
                 .into_iter()
-                .map(|coord| Circle::new(coord, 2, RED.filled())),
+                .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
         )?;
 
         root.present()?;

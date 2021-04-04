@@ -2,7 +2,6 @@ use crate::data::neighbors::{AdjacencyMatrix, NearestNeighborMap};
 use crate::data::point::Point3d;
 use crate::rand::points_in_grid::gen_points_in_cube;
 use crate::rand::uniform::Uniform701;
-use crate::util::magnitude_3d;
 use std::error::Error;
 
 const L: f64 = 20.0;
@@ -13,7 +12,7 @@ pub fn do_assignment_4() -> Result<(), Box<dyn Error>> {
     let mut uni = Uniform701::new();
 
     let mut sites = gen_points_in_cube(&mut uni, L, 500, 2.0);
-    sites.sort_by(|l, r| magnitude_3d(*l).partial_cmp(&magnitude_3d(*r)).unwrap());
+    sites.sort_by(|l, r| l.magnitude().partial_cmp(&r.magnitude()).unwrap());
 
     let first_neighbors = part_4a(&sites)?;
     let first_adj = part_4b(&first_neighbors)?;

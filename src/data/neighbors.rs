@@ -1,5 +1,5 @@
 use crate::data::point::{Point2d, Point3d};
-use crate::util::{distance_2d, distance_3d, TEX_PREFIX, TEX_SUFFIX};
+use crate::util::{TEX_PREFIX, TEX_SUFFIX};
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
@@ -18,7 +18,7 @@ impl NearestNeighborMap {
             let site_i = sites[i];
             for j in i + 1..n {
                 let site_j = sites[j];
-                if distance_2d(site_i, site_j) < r_cutoff {
+                if site_i.distance_to(&site_j) < r_cutoff {
                     neighbors[i].push(j);
                     neighbors[j].push(i);
                 }
@@ -36,7 +36,7 @@ impl NearestNeighborMap {
             let site_i = sites[i];
             for j in i + 1..n {
                 let site_j = sites[j];
-                if distance_3d(site_i, site_j) < r_cutoff {
+                if site_i.distance_to(&site_j) < r_cutoff {
                     neighbors[i].push(j);
                     neighbors[j].push(i);
                 }

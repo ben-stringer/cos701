@@ -1,6 +1,6 @@
 //! Various utility functions
 
-use crate::data::point::{Point2d, Point3d};
+use crate::data::point::Point2d;
 use std::f64::consts::PI;
 
 /// Constant string to begin a latex document in standalone mode
@@ -14,26 +14,6 @@ pub const TEX_PREFIX: &str = "\\documentclass{standalone}
 
 /// Constant string to end a latex document
 pub const TEX_SUFFIX: &str = "\\end{document}";
-
-/// Calculate the 2-dimensional distance between points a and b
-pub fn distance_2d(a: Point2d, b: Point2d) -> f64 {
-    ((a.x - b.x).powf(2.0) + (a.y - b.y).powf(2.0)).sqrt()
-}
-
-/// Calculate the 3-dimensional distance between points a and b
-pub fn distance_3d(a: Point3d, b: Point3d) -> f64 {
-    ((a.x - b.x).powf(2.0) + (a.y - b.y).powf(2.0) + (a.z - b.z).powf(2.0)).sqrt()
-}
-
-/// Calculate the magnitude of the supplied vector, equivalent to returning distance_2d(origin, v)
-pub fn magnitude_2d(v: Point2d) -> f64 {
-    (v.x.powf(2.0) + v.y.powf(2.0)).sqrt()
-}
-
-/// Calculate the magnitude of the supplied vector, equivalent to returning distance_3d(origin, v)
-pub fn magnitude_3d(v: Point3d) -> f64 {
-    (v.x.powf(2.0) + v.y.powf(2.0) + v.z.powf(2.0)).sqrt()
-}
 
 /// Calculate the gamma for half of the supplied positive whole number.
 /// If n is 1, i.e., gamma(1/2), return PI.sqrt().
@@ -95,10 +75,10 @@ pub fn circle_through(p1: Point2d, p2: Point2d, p3: Point2d) -> (Point2d, f64) {
     let zy = -c / (2.0 * a);
     let r = ((zx - x1).powf(2.0) + (zy - y1).powf(2.0)).sqrt();
 
-    (Point2d::from((zx, zy)), r)
+    ((zx, zy).into(), r)
 }
 
 /// Determine whether the supplied point is within the circle centered at center and with radius r
 pub fn point_in_circle(point: Point2d, center: Point2d, r: f64) -> bool {
-    distance_2d(point, center) < r
+    point.distance_to(&center) < r
 }

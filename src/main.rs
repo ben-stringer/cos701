@@ -23,6 +23,8 @@ use crate::assignment::assignment4;
 use crate::assignment::assignment5;
 #[allow(unused_imports)]
 use crate::assignment::assignment6;
+use crate::data::line::Line2d;
+use crate::data::point::Point2d;
 use log::LevelFilter::Warn;
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -34,11 +36,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     ensure_output_dirs_exist()?;
 
-    assignment1::do_assignment_1()?;
-    assignment2::do_assignment_2()?;
-    assignment3::do_assignment_3()?;
-    assignment4::do_assignment_4()?;
-    assignment5::do_assignment_5()?;
+    // assignment1::do_assignment_1()?;
+    // assignment2::do_assignment_2()?;
+    // assignment3::do_assignment_3()?;
+    // assignment4::do_assignment_4()?;
+    // assignment5::do_assignment_5()?;
     assignment6::do_assignment_6()?;
 
     // scratch()?;
@@ -65,13 +67,18 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
 }
 
 // fn scratch() -> Result<(), Box<dyn Error>> {
-//     let a = (1.0, 0.0);
-//     let b = (0.0, 1.0);
-//     let c = (-1.0, 0.0);
+//     let line: Line2d = (Point2d { x: 1.0, y: 2.0 }, Point2d { x: 5.0, y: 7.0 }).into();
+//     let pb = line.perpendicular_bisector(line.length());
 //
-//     let (z, r) = util::circle_through(&a, &b, &c);
-//
-//     log::info!("Center point: ({}, {}), radius: {}", z.0, z.1, r);
+//     log::info!("Line coords: {}", line);
+//     log::info!("pb coords: {}, pb mag: {}", pb, pb.length());
+//     log::info!(
+//         "Line and pb intersection {}",
+//         match line.intersection(&pb) {
+//             Some(pt) => pt.to_string(),
+//             None => "[Lines do not intersect]".to_owned(),
+//         }
+//     );
 //
 //     Ok(())
 // }

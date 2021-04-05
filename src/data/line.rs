@@ -1,5 +1,6 @@
 use crate::data::point::Point2d;
 
+#[derive(Copy, Clone)]
 pub struct Line2d {
     pub src: Point2d,
     pub dst: Point2d,
@@ -8,7 +9,7 @@ pub struct Line2d {
 impl Line2d {
     /// Calculate a perpendicular bisector for this line.
     /// The resulting line will have a length of `len` and will be orthogonal to this line
-    pub fn perpendicular_bisector(&self, len: f64) -> Line2d {
+    pub fn perpendicular_bisector(&self) -> Line2d {
         let midpoint = self.midpoint();
         let slope = self.orthogonal_slope();
         let b = midpoint.y - (slope * midpoint.x);
@@ -62,6 +63,15 @@ impl Line2d {
             let y = a * x + c;
             Some(Point2d { x, y })
         }
+    }
+
+    /// Return the angle formed between this line and a line starting at src and continuing in
+    /// the positive x direction
+    pub fn angle(&self) -> f64 {
+        let r = self.length();
+        let y = self.dst.y - self.src.y;
+
+        (y / r).asin()
     }
 }
 

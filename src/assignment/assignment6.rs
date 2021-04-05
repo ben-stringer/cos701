@@ -61,6 +61,43 @@ fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
 }
 
 fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
+    log::info!("Doing part b");
+
+    let nn_map = NearestNeighborMap::first_2d(sites, 2.0);
+    let bounding_lines: Vec<Line2d> = (0..sites.len())
+        .map(|src_i| {
+            let src = sites[src_i];
+            let neighbors = &nn_map.neighbors[src_i];
+            let mut spokes: Vec<Line2d> = neighbors
+                .into_iter()
+                .map(|&site_j| sites[site_j])
+                .map(|dst| Line2d::from((src, dst)))
+                .collect();
+            spokes.sort_by(|&l, &r| l.angle().partial_cmp(&r.angle()).unwrap());
+            let mut bisectors: Vec<Line2d> = spokes
+                .into_iter()
+                .map(|spoke| spoke.perpendicular_bisector())
+                .collect();
+            bisectors.push(bisectors[0].clone());
+            let mut intersections: Vec<Point2d> = bisectors
+                .windows(2)
+                .filter_map(|b| b[0].intersection(&b[1]))
+                .collect();
+            intersections.push(intersections[0].clone());
+            intersections
+                .windows(2)
+                .map(|pts| Line2d::from((pts[0], pts[1])))
+                .collect::<Vec<Line2d>>()
+        })
+        .flatten()
+        .collect();
+
+    plot_voronoi_diagram(
+        "output/assignment6/part_6b.png",
+        "Homemade Voronoi Diagram",
+        sites,
+        &bounding_lines,
+    )?;
     Ok(())
 }
 

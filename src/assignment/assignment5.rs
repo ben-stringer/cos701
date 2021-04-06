@@ -120,7 +120,7 @@ fn plot_triangulation(
 
     lines
         .into_iter()
-        .map(|(src, dst)| (sites[*src], sites[*dst]))
+        .map(|&(src, dst)| (sites[src], sites[dst]))
         .for_each(|(src, dst)| {
             if let Err(err) = chart.draw_series(LineSeries::new(
                 vec![src.to_owned().into(), dst.to_owned().into()],

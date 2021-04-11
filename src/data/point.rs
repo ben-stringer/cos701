@@ -21,6 +21,12 @@ impl Point2d {
     pub fn distance_to(&self, that: &Self) -> f64 {
         ((self.x - that.x).powf(2.0) + (self.y - that.y).powf(2.0)).sqrt()
     }
+
+    pub fn shift_by(mut self, that: &Self) -> Self {
+        self.x = self.x + that.x;
+        self.y = self.y + that.y;
+        self
+    }
 }
 
 impl Point3d {
@@ -50,7 +56,7 @@ impl From<Point2d> for (f64, f64) {
 
 impl std::fmt::Display for Point2d {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({}, {})", self.x, self.y)
+        write!(f, "({:.2}, {:.2})", self.x, self.y)
     }
 }
 
@@ -72,6 +78,6 @@ impl From<Point3d> for (f64, f64, f64) {
 
 impl std::fmt::Display for Point3d {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({}, {}, {})", self.x, self.y, self.z)
+        write!(f, "({:.2}, {:.2}, {:.2})", self.x, self.y, self.z)
     }
 }

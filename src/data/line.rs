@@ -16,28 +16,26 @@ impl Line2d {
         let slope = -1.0 / self.slope();
         let b = midpoint.y - (slope * midpoint.x);
 
-        if slope.is_infinite() {
-            Self {
-                src: Point2d {
-                    x: midpoint.x,
-                    y: midpoint.y + 0.2,
-                },
-                dst: Point2d {
-                    x: midpoint.x,
-                    y: midpoint.y - 0.2,
-                },
-            }
-        } else {
-            Self {
-                src: Point2d {
-                    x: midpoint.x + 0.2,
-                    y: (midpoint.x + 0.2) * slope + b,
-                },
-                dst: Point2d {
-                    x: midpoint.x - 0.2,
-                    y: (midpoint.x - 0.2) * slope + b,
-                },
-            }
+        let l = Self {
+            src: midpoint,
+            dst: (
+                midpoint.x + 0.2 * (1.0 / (1.0 + slope.powf(2.0)).sqrt()),
+                midpoint.y + (0.2 * (slope / (1.0 + slope.powf(2.0)).sqrt())),
+            )
+                .into(),
+        };
+        let r = Self {
+            src: midpoint,
+            dst: (
+                midpoint.x - 0.2 * (1.0 / (1.0 + slope.powf(2.0)).sqrt()),
+                midpoint.y - (0.2 * (slope / (1.0 + slope.powf(2.0)).sqrt())),
+            )
+                .into(),
+        };
+
+        Self {
+            src: l.dst,
+            dst: r.dst,
         }
     }
 
@@ -67,9 +65,27 @@ impl Line2d {
     /// Determine the point at which the two lines intersect, or if they are parallel,
     /// return None.
     pub fn intersection(&self, that: &Self) -> Option<Point2d> {
+        // fn line(src: &Point2d, dst: &Point2d) -> (f64, f64, f64) {
+        //     let a = src.y - dst.y;
+        //     let b = dst.x - src.x;
+        //     let c = -(src.x * dst.y - dst.x * src.y);
+        //     (a, b, c)
+        // }
+        //
+        // let l1 = line(&self.src, &self.dst);
+        // let l2 = line(&that.src, &that.dst);
+        //
+        // let d = l1.0 * l2.1 - l1.1 * l2.0;
+        // if d == 0.0 {
+        //     None
+        // } else {
+        //     let dx = l1.2 * l2.1 - l1.1 * l2.2;
+        //     let dy = l1.0 * l2.2 - l1.2 * l2.0;
+        //     Some((dx / d, dy / d).into())
+        // }
         let a = self.slope();
         let b = that.slope();
-        let result = if a == b {
+        if a == b {
             None
         } else {
             let c = self.src.y - (a * self.src.x);
@@ -77,16 +93,21 @@ impl Line2d {
             if c == d {
                 None
             } else if a.is_infinite() {
-                Some(Point2d { x: self.src.x, y: b * self.src.x + d })
+                Some(Point2d {
+                    x: self.src.x,
+                    y: b * self.src.x + d,
+                })
             } else if b.is_infinite() {
-                Some(Point2d { x: that.src.x, y: a * that.src.x + c})
+                Some(Point2d {
+                    x: that.src.x,
+                    y: a * that.src.x + c,
+                })
             } else {
                 let x = (d - c) / (a - b);
                 let y = b * x + d;
                 Some(Point2d { x, y })
             }
-        };
-        result
+        }
     }
 
     /// Return the angle formed between this line and a line starting at src and continuing in
@@ -120,6 +141,18 @@ impl Line2d {
             angle_that += 2.0 * PI;
         }
         angle_that - angle_self
+    }
+
+    pub fn normalize(mut self) -> Self {
+        let mut v = Line2d {
+            src: (0.0, 0.0).into(),
+            dst: (self.dst.x - self.src.x, self.dst.y - self.src.y).into(),
+        };
+        let len = v.length();
+        v.dst.x = v.dst.x / len;
+        v.dst.y = v.dst.y / len;
+        self.dst = (v.dst.x + self.src.x, v.dst.y + self.src.y).into();
+        self
     }
 }
 

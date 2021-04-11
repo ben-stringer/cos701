@@ -1,10 +1,9 @@
 use plotters::prelude::*;
 
-use crate::data::neighbors::NearestNeighborMap;
+use crate::data::delaunay::dealunay_701;
 use crate::data::point::Point2d;
 use crate::rand::points_in_grid::gen_points_in_box;
 use crate::rand::uniform::Uniform701;
-use crate::util::{circle_through, point_in_circle};
 use std::error::Error;
 
 pub fn do_assignment_5() -> Result<(), Box<dyn Error>> {
@@ -52,34 +51,13 @@ fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
 fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part b");
 
-    let first_neighbors = NearestNeighborMap::first_2d(sites, 4.0);
-
-    let mut lines: Vec<(usize, usize)> = Vec::with_capacity(sites.len());
-
-    for i in 0..sites.len() {
-        let neighbors_i = &first_neighbors.neighbors[i];
-        for &j in neighbors_i {
-            for &k in neighbors_i {
-                if k == j {
-                    continue;
-                }
-                let (center, r) = circle_through(sites[i], sites[j], sites[k]);
-                if let None = (0..sites.len())
-                    .filter(|&v| !(v == i || v == j || v == k))
-                    .find(|&v| point_in_circle(sites[v], center, r))
-                {
-                    lines.push((i, j));
-                    lines.push((j, k));
-                    lines.push((k, i));
-                }
-            }
-        }
-    }
-
+    let mut lines = dealunay_701(sites, 4.0, false)
+        .into_iter()
+        .enumerate()
+        .flat_map(|(i, others)| others.into_iter().map(move |j| (i, j)))
+        .collect::<Vec<(usize, usize)>>();
     lines.sort_unstable();
     lines.dedup();
-
-    log::info!("Num lines: {}", lines.len());
 
     plot_triangulation(
         "output/assignment5/part_5b.png",

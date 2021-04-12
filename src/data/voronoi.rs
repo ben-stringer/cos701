@@ -7,18 +7,22 @@ pub fn voronoi_701(sites: &Vec<Point2d>, delaunay: &Vec<Vec<usize>>) -> Vec<Line
     let mut ret = vec![];
 
     for i in 0..n_sites {
-        let mut bounding_lines = (&delaunay[i])
+        let mut spokes = (&delaunay[i])
             .into_iter()
             .map(|&j| {
                 let src = sites[i];
                 let dst = sites[j];
-                let line = Line2d { src, dst };
-                line.perpendicular_bisector()
+                Line2d { src, dst }
             })
             .collect::<Vec<Line2d>>();
-        bounding_lines.sort_by(|&l, &r| l.angle().partial_cmp(&r.angle()).unwrap());
+        spokes.sort_by(|&l, &r| l.angle().partial_cmp(&r.angle()).unwrap());
 
-        // Play connect the dots
+        let mut bounding_lines = (&spokes)
+            .into_iter()
+            .map(|line| line.perpendicular_bisector())
+            .collect::<Vec<Line2d>>();
+
+        let mut to_remove = vec![];
         for j in 0..bounding_lines.len() {
             let k = if j + 1 == bounding_lines.len() {
                 0
@@ -26,14 +30,22 @@ pub fn voronoi_701(sites: &Vec<Point2d>, delaunay: &Vec<Vec<usize>>) -> Vec<Line
                 j + 1
             };
             let intersection = bounding_lines[j].intersection(&bounding_lines[k]).unwrap();
-            log::info!(
-                "Lines {} and {} intersect at {:.2}",
-                bounding_lines[j],
-                bounding_lines[k],
-                intersection
-            );
             bounding_lines[j].dst = intersection;
             bounding_lines[k].src = intersection;
+            let len_j = bounding_lines[j].length();
+            let len_k = bounding_lines[k].length();
+            if len_j > 2.0 {
+                to_remove.push(j);
+            }
+            if len_k > 2.0 {
+                to_remove.push(k);
+            }
+        }
+        to_remove.sort_unstable();
+        to_remove.dedup();
+        to_remove.reverse();
+        for j in to_remove {
+            bounding_lines.remove(j);
         }
 
         ret.append(&mut bounding_lines);

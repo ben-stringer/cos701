@@ -2,7 +2,7 @@ use ordered_float::OrderedFloat;
 use plotters::prelude::*;
 use voronoi;
 
-use crate::data::delaunay::dealunay_701;
+use crate::data::delaunay::dealunay_2d;
 use crate::data::line::Line2d;
 use crate::data::point::Point2d;
 use crate::data::voronoi::voronoi_701;
@@ -68,7 +68,7 @@ fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
 fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part b");
 
-    let triangulation = dealunay_701(sites, 4.0, false);
+    let triangulation = dealunay_2d(sites, 4.0, false);
 
     let lines = voronoi_701(&sites, &triangulation);
 

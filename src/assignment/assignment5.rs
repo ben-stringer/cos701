@@ -1,6 +1,6 @@
 use plotters::prelude::*;
 
-use crate::data::delaunay::dealunay_701;
+use crate::data::delaunay::{dealunay_2d, to_lines_2d};
 use crate::data::point::Point2d;
 use crate::rand::points_in_grid::gen_points_in_box;
 use crate::rand::uniform::Uniform701;
@@ -51,13 +51,7 @@ fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
 fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part b");
 
-    let mut lines = dealunay_701(sites, 4.0, false)
-        .into_iter()
-        .enumerate()
-        .flat_map(|(i, others)| others.into_iter().map(move |j| (i, j)))
-        .collect::<Vec<(usize, usize)>>();
-    lines.sort_unstable();
-    lines.dedup();
+    let lines = to_lines_2d(dealunay_2d(sites, 4.0, false));
 
     plot_triangulation(
         "output/assignment5/part_5b.png",

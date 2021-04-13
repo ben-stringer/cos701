@@ -1,4 +1,5 @@
 pub(crate) mod delaunay;
+pub(crate) mod lattice;
 pub(crate) mod line;
 pub(crate) mod neighbors;
 pub(crate) mod point;

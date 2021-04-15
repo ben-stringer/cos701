@@ -1,7 +1,6 @@
 use crate::rand::uniform::Uniform701;
 
 type Site = (usize, usize);
-type Clusters = Vec<Vec<Site>>;
 
 pub struct Lattice {
     pub grid: Vec<Vec<bool>>,
@@ -72,12 +71,29 @@ impl Lattice {
             }
         }
 
-        clusters
+        Clusters { clusters }
     }
 }
 
-// pub struct Clusters {
-//     pub clusters: Vec<Vec<(usize, usize)>>,
-// }
-//
-// impl Clusters {}
+pub struct Clusters {
+    pub clusters: Vec<Vec<Site>>,
+}
+
+impl Clusters {
+    /// Get a new instance of this type where all the elements are percolating clusters
+    /// A percolating cluster is a cluster with an element at the top and bottom
+    pub fn get_percolating_clusters(&self, box_len: usize) -> Self {
+        let mut pc: Vec<Vec<Site>> = vec![];
+        for cluster in &self.clusters {
+            if let Some(entry_element) = cluster.into_iter().find(|&site| site.0 == box_len - 1) {
+                // We found an element along the top row
+                if let Some(exit_element) = cluster.into_iter().find(|&site| site.0 == 0) {
+                    // We also found an element along the bottom row
+                    // Because this is a cluster, these must be connected
+                    pc.push(cluster.clone());
+                }
+            }
+        }
+        Self { clusters: pc }
+    }
+}

@@ -51,11 +51,11 @@ fn plot_rates(path: &str, caption: &str, to_plot: &Vec<Vec<usize>>) -> Result<()
         .draw()?;
 
     chart.draw_series(LineSeries::new(
-        to_plot.into_iter().enumerate().map(|(usize, vals)| {
+        to_plot.iter().enumerate().map(|(usize, vals)| {
             let n_vals = vals.len() as f64;
             (
                 ((usize + 1) * 5) as f64 * 0.01,
-                vals.into_iter().sum::<usize>() as f64 / n_vals,
+                vals.iter().sum::<usize>() as f64 / n_vals,
             )
         }),
         &BLUE,

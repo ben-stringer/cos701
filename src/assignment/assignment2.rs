@@ -31,7 +31,9 @@ fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
         "Assignment 2a, L = 20, n = 500",
         0.0..L,
         0.0..L,
-        (0..n).map(|_| From::from((uni.next() * L, uni.next() * L))),
+        (0..n)
+            .map(|_| From::from((uni.next() * L, uni.next() * L)))
+            .collect::<Vec<Point2d>>(),
     )?;
     Ok(())
 }
@@ -41,17 +43,15 @@ fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
 fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part b");
 
-    let accepted: Vec<Point2d> = gen_points_in_box(uni, L, n, r_min)
-        .into_iter()
-        .map(|coord| From::from(coord))
-        .collect();
-
     scatter_2d(
         "output/assignment2/part_2b.png",
         &format!("Assignment 2b, L = 20, n = {}, r_min = {}", n, r_min),
         0.0..L,
         0.0..L,
-        accepted,
+        gen_points_in_box(uni, L, n, r_min)
+            .iter()
+            .map(|&coord| From::from(coord))
+            .collect::<Vec<Point2d>>(),
     )?;
     Ok(())
 }
@@ -79,7 +79,7 @@ fn scatter_2d<'a>(
     caption: &str,
     x_range: Range<f64>,
     y_range: Range<f64>,
-    points: impl IntoIterator<Item = Point2d>,
+    points: Vec<Point2d>,
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -94,8 +94,8 @@ fn scatter_2d<'a>(
 
     chart.draw_series(
         points
-            .into_iter()
-            .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
+            .iter()
+            .map(|&coord| Circle::new(coord.into(), 2, RED.filled())),
     )?;
 
     Ok(())
@@ -123,8 +123,8 @@ fn scatter_3d(
 
     chart.draw_series(
         points
-            .into_iter()
-            .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
+            .iter()
+            .map(|&coord| Circle::new(coord.into(), 2, RED.filled())),
     )?;
 
     Ok(())
@@ -167,8 +167,8 @@ fn animated_3d(
         chart.draw_series(
             points
                 .to_owned()
-                .into_iter()
-                .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
+                .iter()
+                .map(|&coord| Circle::new(coord.into(), 2, RED.filled())),
         )?;
 
         root.present()?;

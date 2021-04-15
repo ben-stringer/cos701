@@ -7,8 +7,8 @@ pub fn voronoi_701(sites: &Vec<Point2d>, delaunay: &Vec<Vec<usize>>) -> Vec<Line
     let mut ret = vec![];
 
     for i in 0..n_sites {
-        let mut spokes = (&delaunay[i])
-            .into_iter()
+        let mut spokes = delaunay[i]
+            .iter()
             .map(|&j| {
                 let src = sites[i];
                 let dst = sites[j];
@@ -17,9 +17,9 @@ pub fn voronoi_701(sites: &Vec<Point2d>, delaunay: &Vec<Vec<usize>>) -> Vec<Line
             .collect::<Vec<Line2d>>();
         spokes.sort_by(|&l, &r| l.angle().partial_cmp(&r.angle()).unwrap());
 
-        let mut bounding_lines = (&spokes)
-            .into_iter()
-            .map(|line| line.perpendicular_bisector())
+        let mut bounding_lines = spokes
+            .iter()
+            .map(|&line| line.perpendicular_bisector())
             .collect::<Vec<Line2d>>();
 
         let mut to_remove = vec![];

@@ -185,7 +185,7 @@ fn scatter_2d<'a>(
     caption: &str,
     x_range: Range<f64>,
     y_range: Range<f64>,
-    points: impl IntoIterator<Item = Point2d>,
+    points: Vec<Point2d>,
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (900, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -200,8 +200,8 @@ fn scatter_2d<'a>(
 
     chart.draw_series(
         points
-            .into_iter()
-            .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
+            .iter()
+            .map(|&coord| Circle::new(coord.into(), 2, RED.filled())),
     )?;
 
     Ok(())
@@ -229,8 +229,8 @@ fn scatter_3d(
 
     chart.draw_series(
         points
-            .into_iter()
-            .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
+            .iter()
+            .map(|&coord| Circle::new(coord.into(), 2, RED.filled())),
     )?;
 
     Ok(())
@@ -273,8 +273,8 @@ fn animate_3d(
         chart.draw_series(
             points
                 .to_owned()
-                .into_iter()
-                .map(|coord| Circle::new(coord.into(), 2, RED.filled())),
+                .iter()
+                .map(|&coord| Circle::new(coord.into(), 2, RED.filled())),
         )?;
 
         root.present()?;

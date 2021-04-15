@@ -11,8 +11,8 @@ pub fn gen_points_in_box(uni: &mut Uniform701, box_len: f64, n: usize, r_min: f6
                 x: uni.next() * box_len,
                 y: uni.next() * box_len,
             };
-            if let None = (&accepted)
-                .into_iter()
+            if let None = accepted
+                .iter()
                 .find(|&&point| point.distance_to(&next) < r_min)
             {
                 accepted.push(next);
@@ -39,8 +39,8 @@ pub fn gen_points_in_cube(
                 y: uni.next() * cube_len,
                 z: uni.next() * cube_len,
             };
-            if let None = (&accepted)
-                .into_iter()
+            if let None = accepted
+                .iter()
                 .find(|&&point| point.distance_to(&next) < r_min)
             {
                 accepted.push(next);

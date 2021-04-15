@@ -37,12 +37,12 @@ fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
         sites,
         &voronoi::make_polygons(&voronoi::voronoi(
             sites
-                .into_iter()
+                .iter()
                 .map(|&v| voronoi::Point::new(v.x, v.y))
                 .collect::<Vec<voronoi::Point>>(),
             800.0,
         ))
-        .into_iter()
+        .iter()
         .map(|polygon| {
             polygon
                 .windows(2)
@@ -101,16 +101,16 @@ fn plot_voronoi_diagram(
     chart.configure_mesh().draw()?;
 
     if let Err(err) = chart.draw_series(
-        (&sites)
-            .into_iter()
+        sites
+            .iter()
             .map(|&coord| Circle::new(coord.into(), 2, BLACK.filled())),
     ) {
         log::error!("Error occurred drawing sites!  Details: {:?}", err);
     }
 
     lines
-        .into_iter()
-        .map(|line| (line.src, line.dst))
+        .iter()
+        .map(|&line| (line.src, line.dst))
         .for_each(|(src, dst)| {
             if let Err(err) = chart.draw_series(LineSeries::new(
                 vec![src.to_owned().into(), dst.to_owned().into()],

@@ -53,10 +53,10 @@ impl RandomVec {
         let x: Vec<f64> = (0..dim)
             .map(|_| gaussian.next() * scale_by + shift_by)
             .collect();
-        let mag = (&x).into_iter().map(|xi| xi.powi(2)).sum::<f64>().sqrt();
+        let mag = x.iter().map(|&xi| xi.powi(2)).sum::<f64>().sqrt();
         let alpha = uniform.next().powf(1.0 / dim as f64);
-        x.into_iter()
-            .map(|xi| xi / mag) // scale point onto surface of unit sphere
+        x.iter()
+            .map(|&xi| xi / mag) // scale point onto surface of unit sphere
             .map(|xi| xi * alpha) // scale point to point within unit sphere
             .collect()
     }
@@ -66,9 +66,9 @@ impl RandomVec {
     }
 
     pub fn is_in_sphere(&self, radius: f64) -> bool {
-        (&self.v)
-            .into_iter()
-            .map(|i| i.powf(2.0))
+        self.v
+            .iter()
+            .map(|&i| i.powf(2.0))
             .sum::<f64>()
             .powf(1.0 / self.v.len() as f64)
             <= radius

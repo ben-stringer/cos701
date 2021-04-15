@@ -85,9 +85,9 @@ impl Clusters {
     pub fn get_percolating_clusters(&self, box_len: usize) -> Self {
         let mut pc: Vec<Vec<Site>> = vec![];
         for cluster in &self.clusters {
-            if let Some(entry_element) = cluster.into_iter().find(|&site| site.0 == box_len - 1) {
+            if let Some(entry_element) = cluster.iter().find(|&&site| site.0 == box_len - 1) {
                 // We found an element along the top row
-                if let Some(exit_element) = cluster.into_iter().find(|&site| site.0 == 0) {
+                if let Some(exit_element) = cluster.iter().find(|&&site| site.0 == 0) {
                     // We also found an element along the bottom row
                     // Because this is a cluster, these must be connected
                     pc.push(cluster.clone());

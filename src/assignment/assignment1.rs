@@ -50,7 +50,7 @@ fn generate_uniform_histogram(mut uni: Uniform701) -> Result<(), Box<dyn Error>>
         0.001,
         max_y,
         bins,
-        Some((Box::new(|x| (x, 1000.0)), "y = μ")),
+        Some((Box::new(|&x| (x, 1000.0)), "y = μ")),
     )?;
 
     Ok(())
@@ -78,7 +78,7 @@ fn part_1a(exp: &mut Exponential701) -> Result<(), Box<dyn Error>> {
         max_y,
         bins,
         Some((
-            Box::new(|x| (x, exp.a() * (-exp.b() * x).exp() * 1_000.0)),
+            Box::new(|&x| (x, exp.a() * (-exp.b() * x).exp() * 1_000.0)),
             "ae^(-bx)",
         )),
     )?;
@@ -109,7 +109,7 @@ fn part_1b(bm: &mut BoxMullerGaussian701) -> Result<(), Box<dyn Error>> {
         max_y,
         bins,
         Some((
-            Box::new(|x| {
+            Box::new(|&x| {
                 let sigma: f64 = 10.0;
                 let a = 1.0 / (2.0 * PI * sigma.powf(2.0)).sqrt();
                 let b = -(x - 0.5).powf(2.0) / 2.0 * sigma.powf(2.0);
@@ -147,7 +147,7 @@ fn part_1c(clt: &mut CentralLimitTheoremGaussian701) -> Result<(), Box<dyn Error
         max_y,
         bins,
         Some((
-            Box::new(|x| {
+            Box::new(|&x| {
                 let sigma: f64 = 10.25;
                 let a = 1.0 / (2.0 * PI * sigma.powf(2.0)).sqrt();
                 let b = -(x - 0.5).powf(2.0) / 2.0 * sigma.powf(2.0);
@@ -185,7 +185,7 @@ fn part_1d(inv: &mut InverseTransform701) -> Result<(), Box<dyn Error>> {
         max_y,
         bins,
         Some((
-            Box::new(|x| {
+            Box::new(|&x| {
                 let y = (x / inv.sigma().powf(2.0))
                     * (-1.0 * x.powf(2.0) / (2.0 * inv.sigma().powf(2.0))).exp()
                     * 1_050.0;
@@ -207,7 +207,7 @@ fn plot_histogram<'a>(
     x_step: f64,
     max_y: f64,
     bins: BTreeMap<String, i32>,
-    optional_curve: Option<(Box<dyn Fn(f64) -> (f64, f64) + 'a>, &str)>,
+    optional_curve: Option<(Box<dyn Fn(&f64) -> (f64, f64) + 'a>, &str)>,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting '{}'.", caption);
 
@@ -246,7 +246,7 @@ fn plot_histogram<'a>(
                     .to_owned()
                     .step(x_step)
                     .key_points(1_000_000)
-                    .into_iter()
+                    .iter()
                     .map(curve_fn)
                     .map(|(x, y)| (x, y / max_y)),
                 &BLUE,

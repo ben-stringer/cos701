@@ -82,8 +82,8 @@ impl NearestNeighborMap {
                     i,
                     site_neighbors.len(),
                     site_neighbors
-                        .into_iter()
-                        .map(|v| v.to_string())
+                        .iter()
+                        .map(|&v| v.to_string())
                         .collect::<Vec<String>>()
                         .join(" "),
                 )
@@ -106,8 +106,8 @@ impl NearestNeighborMap {
                     i,
                     site_neighbors.len(),
                     site_neighbors
-                        .into_iter()
-                        .map(|v| v.to_string())
+                        .iter()
+                        .map(|&v| v.to_string())
                         .collect::<Vec<String>>()
                         .join(" "),
                 )
@@ -138,14 +138,14 @@ impl NearestNeighborMap {
                     site_i.z,
                     first_i.len(),
                     first_i
-                        .into_iter()
-                        .map(|v| v.to_string())
+                        .iter()
+                        .map(|&v| v.to_string())
                         .collect::<Vec<String>>()
                         .join(" "),
                     second_i.len(),
                     second_i
-                        .into_iter()
-                        .map(|v| v.to_string())
+                        .iter()
+                        .map(|&v| v.to_string())
                         .collect::<Vec<String>>()
                         .join(" ")
                 )
@@ -181,8 +181,8 @@ impl AdjacencyMatrix {
         for i in 0..self.m.len() {
             let row = &self.m[i];
             of.write(
-                row.into_iter()
-                    .map(|v| v.to_string())
+                row.iter()
+                    .map(|&v| v.to_string())
                     .collect::<Vec<String>>()
                     .join(", ")
                     .as_ref(),

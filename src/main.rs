@@ -66,7 +66,7 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
         "output/assignment7",
         "output/projectD",
     ]
-    .into_iter()
+    .iter()
     .try_for_each(std::fs::create_dir_all)?;
 
     Ok(())

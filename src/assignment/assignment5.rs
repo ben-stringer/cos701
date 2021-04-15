@@ -23,7 +23,7 @@ fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part a");
 
     let wrapped_points = &sites
-        .into_iter()
+        .iter()
         .map(|&v| delaunator::Point { x: v.x, y: v.y })
         .collect::<Vec<delaunator::Point>>();
 
@@ -83,15 +83,15 @@ fn plot_triangulation(
     chart.configure_mesh().draw()?;
 
     if let Err(err) = chart.draw_series(
-        (&sites)
-            .into_iter()
+        sites
+            .iter()
             .map(|&coord| Circle::new(coord.into(), 2, BLACK.filled())),
     ) {
         log::error!("Error occurred drawing sites!  Details: {:?}", err);
     }
 
     lines
-        .into_iter()
+        .iter()
         .map(|&(src, dst)| (sites[src], sites[dst]))
         .for_each(|(src, dst)| {
             if let Err(err) = chart.draw_series(LineSeries::new(

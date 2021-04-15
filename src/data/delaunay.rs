@@ -51,9 +51,9 @@ pub fn dealunay_2d(sites: &Vec<Point2d>, r_cutoff: f64, bidirectional: bool) -> 
 
 pub fn to_lines_2d(triangulation: Vec<Vec<usize>>) -> Vec<(usize, usize)> {
     let mut lines = triangulation
-        .into_iter()
+        .iter()
         .enumerate()
-        .flat_map(|(i, others)| others.into_iter().map(move |j| (i, j)))
+        .flat_map(|(i, others)| others.iter().map(move |&j| (i, j)))
         .collect::<Vec<(usize, usize)>>();
     lines.sort_unstable();
     lines.dedup();

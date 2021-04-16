@@ -71,21 +71,25 @@ impl Lattice {
             }
         }
 
-        Clusters { clusters }
+        Clusters {
+            clusters,
+            box_len: self.box_len,
+        }
     }
 }
 
 pub struct Clusters {
     pub clusters: Vec<Vec<Site>>,
+    box_len: usize,
 }
 
 impl Clusters {
     /// Get a new instance of this type where all the elements are percolating clusters
     /// A percolating cluster is a cluster with an element at the top and bottom
-    pub fn get_percolating_clusters(&self, box_len: usize) -> Self {
+    pub fn get_percolating_clusters(&self) -> Self {
         let mut pc: Vec<Vec<Site>> = vec![];
         for cluster in &self.clusters {
-            if let Some(entry_element) = cluster.iter().find(|&&site| site.0 == box_len - 1) {
+            if let Some(entry_element) = cluster.iter().find(|&&site| site.0 == self.box_len - 1) {
                 // We found an element along the top row
                 if let Some(exit_element) = cluster.iter().find(|&&site| site.0 == 0) {
                     // We also found an element along the bottom row
@@ -94,6 +98,9 @@ impl Clusters {
                 }
             }
         }
-        Self { clusters: pc }
+        Self {
+            clusters: pc,
+            box_len: self.box_len,
+        }
     }
 }

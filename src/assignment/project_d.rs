@@ -1,6 +1,6 @@
 use plotters::prelude::*;
 
-use crate::data::lattice::Lattice;
+use crate::data::lattice::{Clusters, Lattice};
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
 use std::ops::Range;
@@ -13,28 +13,99 @@ const P_RANGE: Range<usize> = 0..19;
 pub fn do_project_d() -> Result<(), Box<dyn Error>> {
     let mut uni = Uniform701::new();
 
-    let mut results = vec![vec![0; N_ITER]; P_RANGE.end];
+    let mut clusters = P_RANGE
+        .map(|i| {
+            let p = ((i + 1) * 5) as f64 * 0.01;
+            (0..N_ITER)
+                .map(|j| Lattice::populate(p, BOX_LEN, &mut uni).create_clusters())
+                .collect::<Vec<Clusters>>()
+        })
+        .collect::<Vec<Vec<Clusters>>>();
 
-    for i in P_RANGE {
-        let p = ((i + 1) * 5) as f64 * 0.01;
-        for j in 0..N_ITER {
-            let lattice = Lattice::populate(p, BOX_LEN, &mut uni);
-            let clusters = lattice.create_clusters();
-            let pc = clusters.get_percolating_clusters(BOX_LEN);
-            results[i][j] = pc.clusters.len();
-        }
-    }
+    let sizes = vec![
+        (0.25, calculate_spread(&mut clusters[4])),
+        (0.5, calculate_spread(&mut clusters[9])),
+        (0.7, calculate_spread(&mut clusters[13])),
+    ];
 
-    plot_rates(
-        "output/projectD/rates.png",
+    plot_cluster_rates("output/projectD/cluster_sizes.png", "Cluster Sizes", &sizes)?;
+
+    plot_percolating_cluster_rates(
+        "output/projectD/percolating_clusters.png",
         "Average percolating clusters",
-        &results,
+        &clusters
+            .iter()
+            .map(|p_v| {
+                p_v.iter()
+                    .map(|v| v.get_percolating_clusters().clusters.len())
+                    .collect::<Vec<usize>>()
+            })
+            .collect::<Vec<Vec<usize>>>(),
     )?;
     Ok(())
 }
 
-fn plot_rates(path: &str, caption: &str, to_plot: &Vec<Vec<usize>>) -> Result<(), Box<dyn Error>> {
-    log::info!("Plotting average percolating clusters");
+fn calculate_spread(data: &mut Vec<Clusters>) -> (f64, f64, f64) {
+    let n = data.len();
+    let mut sizes: Vec<usize> = data
+        .iter()
+        .flat_map(|c| {
+            c.clusters
+                .iter()
+                .map(|cluster| cluster.len())
+                .collect::<Vec<usize>>()
+        })
+        .collect();
+    sizes.sort_unstable();
+    let min = sizes[0] as f64;
+    let max = sizes[sizes.len() - 1] as f64;
+    let avg = sizes.iter().sum::<usize>() as f64 / (sizes.len() - 1) as f64;
+    (min, avg, max)
+}
+
+fn plot_cluster_rates(
+    path: &str,
+    caption: &str,
+    sizes: &Vec<(f64, (f64, f64, f64))>,
+) -> Result<(), Box<dyn Error>> {
+    log::info!("Plotting cluster size distribution");
+
+    let root = BitMapBackend::new(path, (800, 600)).into_drawing_area();
+    root.fill(&WHITE)?;
+
+    let x_range = sizes.iter().map(|v| v.0).collect::<Vec<f64>>();
+    // let y_range = -10.0..10000.0;
+    // sizes
+    //     .iter()
+    //     .map(|entry| (entry.1).2.ceil() as usize)
+    //     .max()
+    //     .unwrap() as f64;
+
+    let mut chart = ChartBuilder::on(&root)
+        .caption(caption, ("sans-serif", 50).into_font())
+        .margin(32)
+        .x_label_area_size(32)
+        .y_label_area_size(32)
+        .build_cartesian_2d(x_range.into_segmented(), (0.1_f64..1e4_f64).log_scale())?;
+    chart
+        .configure_mesh()
+        .disable_mesh()
+        .y_label_formatter(&|y| format!("{}", y))
+        .draw()?;
+
+    chart.draw_series(sizes.iter().map(|(p, q)| {
+        ErrorBar::new_vertical(SegmentValue::CenterOf(p), q.0, q.1, q.2, BLUE.filled(), 10)
+    }))?;
+
+    Ok(())
+}
+
+fn plot_percolating_cluster_rates(
+    path: &str,
+    caption: &str,
+    to_plot: &Vec<Vec<usize>>,
+) -> Result<(), Box<dyn Error>> {
+    log::info!("Plotting average number of percolating clusters");
 
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;

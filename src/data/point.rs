@@ -1,3 +1,10 @@
+pub(crate) const ORIGIN_2D: Point2d = Point2d { x: 0.0, y: 0.0 };
+pub(crate) const ORIGIN_3D: Point3d = Point3d {
+    x: 0.0,
+    y: 0.0,
+    z: 0.0,
+};
+
 #[derive(Copy, Clone)]
 pub struct Point2d {
     pub x: f64,

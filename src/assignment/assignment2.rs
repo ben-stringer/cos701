@@ -1,7 +1,9 @@
 use plotters::prelude::*;
 
 use crate::data::point::{Point2d, Point3d};
-use crate::rand::points_in_grid::{gen_points_in_box, gen_points_in_cube};
+use crate::rand::points_in_grid::{
+    gen_points_in_box, gen_points_in_cube, gen_spaced_points_in_box,
+};
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
 use std::ops::Range;
@@ -31,9 +33,7 @@ fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
         "Assignment 2a, L = 20, n = 500",
         0.0..L,
         0.0..L,
-        (0..n)
-            .map(|_| From::from((uni.next() * L, uni.next() * L)))
-            .collect::<Vec<Point2d>>(),
+        gen_points_in_box(uni, L, n),
     )?;
     Ok(())
 }
@@ -48,10 +48,7 @@ fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
         &format!("Assignment 2b, L = 20, n = {}, r_min = {}", n, r_min),
         0.0..L,
         0.0..L,
-        gen_points_in_box(uni, L, n, r_min)
-            .iter()
-            .map(|&coord| From::from(coord))
-            .collect::<Vec<Point2d>>(),
+        gen_spaced_points_in_box(uni, L, n, r_min),
     )?;
     Ok(())
 }

@@ -15,7 +15,7 @@ pub fn voronoi_701(sites: &Vec<Point2d>, delaunay: &Vec<Vec<usize>>) -> Vec<Line
                 Line2d { src, dst }
             })
             .collect::<Vec<Line2d>>();
-        spokes.sort_by(|&l, &r| l.angle().partial_cmp(&r.angle()).unwrap());
+        spokes.sort_unstable_by(|&l, &r| l.angle().partial_cmp(&r.angle()).unwrap());
 
         let mut bounding_lines = spokes
             .iter()

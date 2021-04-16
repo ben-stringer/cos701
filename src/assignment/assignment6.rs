@@ -6,7 +6,7 @@ use crate::data::delaunay::dealunay_2d;
 use crate::data::line::Line2d;
 use crate::data::point::Point2d;
 use crate::data::voronoi::voronoi_701;
-use crate::rand::points_in_grid::gen_points_in_box;
+use crate::rand::points_in_grid::gen_spaced_points_in_box;
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
 use std::fs::File;
@@ -20,7 +20,7 @@ pub fn do_assignment_6() -> Result<(), Box<dyn Error>> {
 
     let mut uni = Uniform701::new();
 
-    let sites = gen_points_in_box(&mut uni, 20.0, 500, 0.7);
+    let sites = gen_spaced_points_in_box(&mut uni, 20.0, 500, 0.7);
 
     do_part_a(&sites)?;
     do_part_b(&sites)?;

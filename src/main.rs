@@ -45,7 +45,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     // assignment5::do_assignment_5()?;
     // assignment6::do_assignment_6()?;
     assignment7::do_assignment_7()?;
-    project_d::do_project_d()?;
+    // project_d::do_project_d()?;
 
     // scratch()?;
 

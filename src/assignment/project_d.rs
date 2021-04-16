@@ -11,7 +11,16 @@ const N_ITER: usize = 20;
 const P_RANGE: Range<usize> = 0..19;
 
 pub fn do_project_d() -> Result<(), Box<dyn Error>> {
+    log::info!("Doing Project D");
+
     let mut uni = Uniform701::new();
+
+    log::info!(
+        "Generating clusters for p range {}-{}, with {} iterations each.",
+        (P_RANGE.start + 1) * 5,
+        P_RANGE.end * 5,
+        N_ITER
+    );
 
     let mut clusters = P_RANGE
         .map(|i| {
@@ -22,13 +31,14 @@ pub fn do_project_d() -> Result<(), Box<dyn Error>> {
         })
         .collect::<Vec<Vec<Clusters>>>();
 
+    log::info!("Calculating cluster sizes for p=0.25, p=0.5, and p=7");
     let sizes = vec![
         (0.25, calculate_spread(&mut clusters[4])),
         (0.5, calculate_spread(&mut clusters[9])),
         (0.7, calculate_spread(&mut clusters[13])),
     ];
 
-    plot_cluster_rates("output/projectD/cluster_sizes.png", "Cluster Sizes", &sizes)?;
+    plot_cluster_sizes("output/projectD/cluster_sizes.png", "Cluster Sizes", &sizes)?;
 
     plot_percolating_cluster_rates(
         "output/projectD/percolating_clusters.png",
@@ -63,7 +73,7 @@ fn calculate_spread(data: &mut Vec<Clusters>) -> (f64, f64, f64) {
     (min, avg, max)
 }
 
-fn plot_cluster_rates(
+fn plot_cluster_sizes(
     path: &str,
     caption: &str,
     sizes: &Vec<(f64, (f64, f64, f64))>,
@@ -74,22 +84,16 @@ fn plot_cluster_rates(
     root.fill(&WHITE)?;
 
     let x_range = sizes.iter().map(|v| v.0).collect::<Vec<f64>>();
-    // let y_range = -10.0..10000.0;
-    // sizes
-    //     .iter()
-    //     .map(|entry| (entry.1).2.ceil() as usize)
-    //     .max()
-    //     .unwrap() as f64;
 
     let mut chart = ChartBuilder::on(&root)
         .caption(caption, ("sans-serif", 50).into_font())
         .margin(32)
         .x_label_area_size(32)
         .y_label_area_size(32)
-        .build_cartesian_2d(x_range.into_segmented(), (0.1_f64..1e4_f64).log_scale())?;
+        .build_cartesian_2d(x_range.into_segmented(), (1.0..10000.0).log_scale())?;
     chart
         .configure_mesh()
-        .disable_mesh()
+        // .disable_mesh()
         .y_label_formatter(&|y| format!("{}", y))
         .draw()?;
 
@@ -107,7 +111,7 @@ fn plot_percolating_cluster_rates(
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting average number of percolating clusters");
 
-    let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
+    let root = BitMapBackend::new(path, (800, 600)).into_drawing_area();
     root.fill(&WHITE)?;
 
     let mut chart = ChartBuilder::on(&root)
@@ -131,12 +135,6 @@ fn plot_percolating_cluster_rates(
         }),
         &BLUE,
     ))?;
-
-    // chart
-    //     .configure_series_labels()
-    //     .border_style(&BLACK)
-    //     .background_style(&WHITE.mix(0.8))
-    //     .draw()?;
 
     Ok(())
 }

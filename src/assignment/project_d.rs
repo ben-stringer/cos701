@@ -22,11 +22,21 @@ pub fn do_project_d() -> Result<(), Box<dyn Error>> {
         N_ITER
     );
 
-    let mut clusters = P_RANGE
+    let lattices = P_RANGE
         .map(|i| {
             let p = ((i + 1) * 5) as f64 * 0.01;
             (0..N_ITER)
-                .map(|j| Lattice::populate(p, BOX_LEN, &mut uni).create_clusters())
+                .map(|j| Lattice::populate(p, BOX_LEN, &mut uni))
+                .collect::<Vec<Lattice>>()
+        })
+        .collect::<Vec<Vec<Lattice>>>();
+
+    let mut clusters = lattices
+        .iter()
+        .map(|lattices_for_p| {
+            lattices_for_p
+                .iter()
+                .map(|lattice| lattice.create_clusters())
                 .collect::<Vec<Clusters>>()
         })
         .collect::<Vec<Vec<Clusters>>>();
@@ -52,6 +62,17 @@ pub fn do_project_d() -> Result<(), Box<dyn Error>> {
             })
             .collect::<Vec<Vec<usize>>>(),
     )?;
+
+    draw_lattice("output/projectD/lattice_p_0.25.png",
+    "Representative lattice for p=0.25",
+    &lattices[4][0])?;
+    draw_lattice("output/projectD/lattice_p_0.5.png",
+                 "Representative lattice for p=0.5",
+                 &lattices[9][0])?;
+    draw_lattice("output/projectD/lattice_p_0.7.png",
+                 "Representative lattice for p=0.7",
+                 &lattices[13][0])?;
+
     Ok(())
 }
 
@@ -98,7 +119,14 @@ fn plot_cluster_sizes(
         .draw()?;
 
     chart.draw_series(sizes.iter().map(|(p, q)| {
-        ErrorBar::new_vertical(SegmentValue::CenterOf(p), q.0, q.1, q.2, BLUE.filled(), 10)
+        ErrorBar::new_vertical(
+            SegmentValue::CenterOf(p),
+            q.0,
+            q.1,
+            q.2,
+            BLUE.stroke_width(4),
+            12,
+        )
     }))?;
 
     Ok(())
@@ -133,8 +161,34 @@ fn plot_percolating_cluster_rates(
                 vals.iter().sum::<usize>() as f64 / n_vals,
             )
         }),
-        &BLUE,
+        BLUE.stroke_width(4),
     ))?;
 
+    Ok(())
+}
+
+fn draw_lattice(path: &str, caption: &str, lattice: &Lattice) -> Result<(), Box<dyn Error>> {
+    log::info!("Plotting lattice: '{}'", caption);
+
+    let root = BitMapBackend::new(path, (800, 800)).into_drawing_area();
+    root.fill(&WHITE)?;
+
+    let mut chart = ChartBuilder::on(&root)
+        .caption(caption, ("sans-serif", 50).into_font())
+        .margin(32)
+        .x_label_area_size(32)
+        .y_label_area_size(32)
+        .build_cartesian_2d(0..BOX_LEN, 0..BOX_LEN)?;
+    chart
+        .configure_mesh()
+        // .disable_mesh()
+        .draw()?;
+
+    chart.draw_series(lattice.grid.iter().enumerate()
+        .flat_map(|(i, row)| row.iter().enumerate()
+            .map(move|(j, &occupied)| if occupied { Some((i, j)) } else { None }))
+        .filter(Option::is_some).map(Option::unwrap)
+        .map(|(i,j)| Rectangle::new([(i, j), (i+1,j+1)], BLACK.filled())
+    ))?;
     Ok(())
 }

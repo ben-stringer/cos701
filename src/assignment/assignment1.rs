@@ -249,10 +249,10 @@ fn plot_histogram<'a>(
                     .iter()
                     .map(curve_fn)
                     .map(|(x, y)| (x, y / max_y)),
-                &BLUE,
+                BLUE.stroke_width(4),
             ))?
             .label(curve_label)
-            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], &BLUE));
+            .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], BLUE.stroke_width(4)));
         chart
             .configure_series_labels()
             .border_style(&BLACK)

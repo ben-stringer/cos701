@@ -41,7 +41,6 @@ pub fn do_assignment_7() -> Result<(), Box<dyn Error>> {
 }
 
 pub fn compute_convex_hull(grid: &mut Vec<Point2d>) -> (u128, Vec<Line2d>) {
-    log::info!("Computing convex hull for n={}", grid.len());
     let now = Instant::now();
 
     // Sort by magnitude so that element 0 is in the bottom-left
@@ -93,12 +92,6 @@ pub fn compute_convex_hull(grid: &mut Vec<Point2d>) -> (u128, Vec<Line2d>) {
     }
 
     let elapsed = now.elapsed().as_nanos();
-    log::info!(
-        "Computing convex hull for n={} took {}ns and produced a hull with {} lines.",
-        grid.len(),
-        elapsed,
-        hull.len()
-    );
     (elapsed, hull)
 }
 

@@ -3,12 +3,11 @@ use plotters::prelude::*;
 use crate::data::lattice::{Clusters, Lattice};
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
-use std::ops::Range;
+use std::ops::RangeInclusive;
 
 const BOX_LEN: usize = 50;
 const N_ITER: usize = 20;
-/// p is calculated as (i + 1)*5 to give a range of 0.05..0.95
-const P_RANGE: Range<usize> = 0..19;
+const P_RANGE: RangeInclusive<usize> = 20..=75;
 
 pub fn do_project_d() -> Result<(), Box<dyn Error>> {
     log::info!("Doing Project D");
@@ -17,14 +16,14 @@ pub fn do_project_d() -> Result<(), Box<dyn Error>> {
 
     log::info!(
         "Generating clusters for p range {}-{}, with {} iterations each.",
-        (P_RANGE.start + 1) * 5,
-        P_RANGE.end * 5,
+        *P_RANGE.start() as f64 * 0.01,
+        *P_RANGE.end() as f64 * 0.01,
         N_ITER
     );
 
     let lattices = P_RANGE
         .map(|i| {
-            let p = ((i + 1) * 5) as f64 * 0.01;
+            let p = i as f64 * 0.01;
             (0..N_ITER)
                 .map(|j| Lattice::populate(p, BOX_LEN, &mut uni))
                 .collect::<Vec<Lattice>>()
@@ -43,9 +42,9 @@ pub fn do_project_d() -> Result<(), Box<dyn Error>> {
 
     log::info!("Calculating cluster sizes for p=0.25, p=0.5, and p=7");
     let sizes = vec![
-        (0.25, calculate_spread(&mut clusters[4])),
-        (0.5, calculate_spread(&mut clusters[9])),
-        (0.7, calculate_spread(&mut clusters[13])),
+        (0.25, calculate_spread(&mut clusters[5])),
+        (0.5, calculate_spread(&mut clusters[30])),
+        (0.7, calculate_spread(&mut clusters[50])),
     ];
 
     plot_cluster_sizes("output/projectD/cluster_sizes.png", "Cluster Sizes", &sizes)?;
@@ -65,13 +64,13 @@ pub fn do_project_d() -> Result<(), Box<dyn Error>> {
 
     draw_lattice("output/projectD/lattice_p_0.25.png",
     "Representative lattice for p=0.25",
-    &lattices[4][0])?;
+    &lattices[5][0])?;
     draw_lattice("output/projectD/lattice_p_0.5.png",
                  "Representative lattice for p=0.5",
-                 &lattices[9][0])?;
+                 &lattices[30][0])?;
     draw_lattice("output/projectD/lattice_p_0.7.png",
                  "Representative lattice for p=0.7",
-                 &lattices[13][0])?;
+                 &lattices[50][0])?;
 
     Ok(())
 }
@@ -154,14 +153,14 @@ fn plot_percolating_cluster_rates(
         .draw()?;
 
     chart.draw_series(LineSeries::new(
-        to_plot.iter().enumerate().map(|(usize, vals)| {
+        to_plot.iter().enumerate().map(|(i, vals)| {
             let n_vals = vals.len() as f64;
             (
-                ((usize + 1) * 5) as f64 * 0.01,
+                (i + 20) as f64 * 0.01,
                 vals.iter().sum::<usize>() as f64 / n_vals,
             )
         }),
-        BLUE.stroke_width(4),
+        BLUE.stroke_width(2),
     ))?;
 
     Ok(())

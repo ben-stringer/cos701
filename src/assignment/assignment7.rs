@@ -31,13 +31,40 @@ pub fn do_assignment_7() -> Result<(), Box<dyn Error>> {
         )
     })?;
 
+    let from_lib: Vec<(u128, Vec<Line2d>)> =
+        grids.iter().map(compute_convex_hull_from_library).collect();
+
     plot_runtimes(
         "output/assignment7/runtimes.png",
         "Convex Hull Runtimes",
-        hulls.iter().map(|&(time, _)| time).collect::<Vec<u128>>(),
+        hulls
+            .iter()
+            .map(|&(time, _)| time)
+            .zip(from_lib)
+            .map(|(time_me, (time_lib, _))| (time_me, time_lib))
+            .collect::<Vec<(u128, u128)>>(),
     )?;
 
     Ok(())
+}
+
+pub fn compute_convex_hull_from_library(grid: &Vec<Point2d>) -> (u128, Vec<Line2d>) {
+    let now = Instant::now();
+
+    let wrapped_points = &grid
+        .iter()
+        .map(|&v| delaunator::Point { x: v.x, y: v.y })
+        .collect::<Vec<delaunator::Point>>();
+
+    let hull = delaunator::triangulate(wrapped_points)
+        .expect("No triangulation for the points exists!")
+        .hull
+        .windows(2)
+        .map(|points| (grid[points[0]], grid[points[1]]).into())
+        .collect::<Vec<Line2d>>();
+
+    let elapsed = now.elapsed().as_nanos();
+    (elapsed, hull)
 }
 
 pub fn compute_convex_hull(grid: &mut Vec<Point2d>) -> (u128, Vec<Line2d>) {
@@ -132,18 +159,27 @@ pub fn plot_hull(
     Ok(())
 }
 
-fn plot_runtimes(path: &str, caption: &str, to_plot: Vec<u128>) -> Result<(), Box<dyn Error>> {
+fn plot_runtimes(
+    path: &str,
+    caption: &str,
+    to_plot: Vec<(u128, u128)>,
+) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting runtimes");
 
     let root = BitMapBackend::new(path, (800, 600)).into_drawing_area();
     root.fill(&WHITE)?;
+
+    let y_max = u128::max(
+        to_plot.iter().map(|&(v, _)| v).max().unwrap(),
+        to_plot.iter().map(|&(_, v)| v).max().unwrap(),
+    );
 
     let mut chart = ChartBuilder::on(&root)
         .caption(caption, ("sans-serif", 50).into_font())
         .margin(32)
         .x_label_area_size(64)
         .y_label_area_size(64)
-        .build_cartesian_2d(500_usize..10_000_usize, 0..*to_plot.iter().max().unwrap())?;
+        .build_cartesian_2d(500_usize..10_000_usize, 0..y_max)?;
     chart
         .configure_mesh()
         .disable_x_mesh()
@@ -153,10 +189,33 @@ fn plot_runtimes(path: &str, caption: &str, to_plot: Vec<u128>) -> Result<(), Bo
         .y_label_formatter(&|y| format!("{:E}", y))
         .draw()?;
 
-    chart.draw_series(LineSeries::new(
-        to_plot.iter().enumerate().map(|(i, &v)| (500 + i * 500, v)),
-        &BLUE,
-    ))?;
+    chart
+        .draw_series(LineSeries::new(
+            to_plot
+                .iter()
+                .enumerate()
+                .map(|(i, &(v, _))| (500 + i * 500, v)),
+            BLUE.stroke_width(2),
+        ))?
+        .label("My implementation")
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], BLUE.stroke_width(2)));
+
+    chart
+        .draw_series(LineSeries::new(
+            to_plot
+                .iter()
+                .enumerate()
+                .map(|(i, &(_, v))| (500 + i * 500, v)),
+            RED.stroke_width(2),
+        ))?
+        .label("Library implementation")
+        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], RED.stroke_width(2)));
+
+    chart
+        .configure_series_labels()
+        .border_style(&BLACK)
+        .background_style(&WHITE.mix(0.8))
+        .draw()?;
 
     Ok(())
 }

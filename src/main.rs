@@ -44,8 +44,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     // assignment4::do_assignment_4()?;
     // assignment5::do_assignment_5()?;
     // assignment6::do_assignment_6()?;
-    // assignment7::do_assignment_7()?;
-    project_d::do_project_d()?;
+    assignment7::do_assignment_7()?;
+    // project_d::do_project_d()?;
 
     // scratch()?;
 
@@ -56,7 +56,7 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
     log::info!("Creating output directories");
 
     vec![
-        "output/scratch",
+        // "output/scratch",
         "output/assignment1",
         "output/assignment2",
         "output/assignment3",

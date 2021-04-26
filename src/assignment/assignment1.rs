@@ -214,34 +214,26 @@ fn plot_histogram<'a>(
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;
 
-    {
-        let mut chart = ChartBuilder::on(&root)
-            .caption(caption, ("sans-serif", 50).into_font())
-            .margin(32)
-            .x_label_area_size(32)
-            .y_label_area_size(32)
-            .build_cartesian_2d(x_range.to_owned().step(x_step).into_segmented(), 0.0..1.0)?;
-        chart.configure_mesh().disable_mesh().draw()?;
+    let mut chart = ChartBuilder::on(&root)
+        .caption(caption, ("sans-serif", 50).into_font())
+        .margin(32)
+        .x_label_area_size(32)
+        .y_label_area_size(32)
+        .build_cartesian_2d(x_range.to_owned().step(x_step).into_segmented(), 0.0..1.0)?
+        .set_secondary_coord(x_range.to_owned(), 0.0..1.0);
+    chart.configure_mesh().disable_mesh().draw()?;
 
-        chart.draw_series(bins.iter().map(|(k, v)| {
-            let x = k.parse::<f64>().unwrap();
-            let y = *v as f64 / max_y;
-            let x0 = SegmentValue::CenterOf(x);
-            let x1 = SegmentValue::CenterOf(x + x_step);
-            Rectangle::new([(x0, 0.0), (x1, y)], RED.filled())
-        }))?;
-    }
+    chart.draw_series(bins.iter().map(|(k, v)| {
+        let x = k.parse::<f64>().unwrap();
+        let y = *v as f64 / max_y;
+        let x0 = SegmentValue::CenterOf(x);
+        let x1 = SegmentValue::CenterOf(x + x_step);
+        Rectangle::new([(x0, 0.0), (x1, y)], RED.filled())
+    }))?;
 
     if let Some((curve_fn, curve_label)) = optional_curve {
-        let mut chart = ChartBuilder::on(&root)
-            .caption(caption, ("sans-serif", 50).into_font())
-            .margin(32)
-            .x_label_area_size(32)
-            .y_label_area_size(32)
-            .build_cartesian_2d(x_range.to_owned(), 0.0..1.0)?;
-        chart.configure_mesh().disable_mesh().draw()?;
         chart
-            .draw_series(LineSeries::new(
+            .draw_secondary_series(LineSeries::new(
                 x_range
                     .to_owned()
                     .step(x_step)

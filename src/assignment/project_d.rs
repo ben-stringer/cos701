@@ -4,6 +4,7 @@ use crate::data::lattice::{Clusters, Lattice};
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
 use std::ops::RangeInclusive;
+use std::time::Instant;
 
 const BOX_LEN: usize = 50;
 const N_ITER: usize = 20;
@@ -62,15 +63,79 @@ pub fn do_project_d() -> Result<(), Box<dyn Error>> {
             .collect::<Vec<Vec<usize>>>(),
     )?;
 
-    draw_lattice("output/projectD/lattice_p_0.25.png",
-    "Representative lattice for p=0.25",
-    &lattices[5][0])?;
-    draw_lattice("output/projectD/lattice_p_0.5.png",
-                 "Representative lattice for p=0.5",
-                 &lattices[30][0])?;
-    draw_lattice("output/projectD/lattice_p_0.7.png",
-                 "Representative lattice for p=0.7",
-                 &lattices[50][0])?;
+    draw_lattice(
+        "output/projectD/lattice_p_0.25.png",
+        "Representative lattice for p=0.25",
+        &lattices[5][0],
+    )?;
+    draw_lattice(
+        "output/projectD/lattice_p_0.5.png",
+        "Representative lattice for p=0.5",
+        &lattices[30][0],
+    )?;
+    draw_lattice(
+        "output/projectD/lattice_p_0.7.png",
+        "Representative lattice for p=0.7",
+        &lattices[50][0],
+    )?;
+
+    calculate_runtimes(&mut uni)?;
+
+    Ok(())
+}
+
+fn calculate_runtimes(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
+    log::info!("Calculating runtimes");
+
+    let l_vals = (10..=50).step_by(5);
+
+    let mut runtimes = vec![];
+
+    for l in l_vals {
+        let now = Instant::now();
+        let average_pc = (0..10)
+            .map(|_| {
+                let lattice = Lattice::populate(0.6, l, uni);
+                let clusters = lattice.create_clusters();
+                let pc = clusters.get_percolating_clusters();
+                pc.clusters.len()
+            })
+            .sum::<usize>() as f64
+            / 10.0;
+        log::trace!("Average num pc for l={} is {}", l, average_pc);
+        let elapsed = now.elapsed().as_nanos();
+        runtimes.push((l, elapsed));
+    }
+
+    log::info!("Plotting runtimes");
+
+    let y_max = runtimes.iter().map(|&(_, v)| v).max().unwrap();
+
+    let root = BitMapBackend::new("output/projectD/runtimes.png", (800, 600)).into_drawing_area();
+    root.fill(&WHITE)?;
+
+    let mut chart = ChartBuilder::on(&root)
+        .caption(
+            "Runtimes for increasing values of L",
+            ("sans-serif", 50).into_font(),
+        )
+        .margin(32)
+        .x_label_area_size(32)
+        .y_label_area_size(46)
+        .build_cartesian_2d(10_usize..50_usize, 0..y_max)?;
+    chart
+        .configure_mesh()
+        // .disable_mesh()
+        .y_label_formatter(&|y| format!("{:E}", y))
+        .x_desc("L value")
+        .y_desc("Runtime in nanoseconds")
+        .draw()?;
+
+    chart.draw_series(LineSeries::new(
+        runtimes.into_iter(),
+        // .map(|&(l, t)| (SegmentValue::CenterOf(l), t)),
+        BLUE.stroke_width(2),
+    ))?;
 
     Ok(())
 }
@@ -109,12 +174,14 @@ fn plot_cluster_sizes(
         .caption(caption, ("sans-serif", 50).into_font())
         .margin(32)
         .x_label_area_size(32)
-        .y_label_area_size(32)
+        .y_label_area_size(42)
         .build_cartesian_2d(x_range.into_segmented(), (1.0..10000.0).log_scale())?;
     chart
         .configure_mesh()
         // .disable_mesh()
         .y_label_formatter(&|y| format!("{}", y))
+        .x_desc("p-value")
+        .y_desc("Cluster Size")
         .draw()?;
 
     chart.draw_series(sizes.iter().map(|(p, q)| {
@@ -145,11 +212,13 @@ fn plot_percolating_cluster_rates(
         .caption(caption, ("sans-serif", 50).into_font())
         .margin(32)
         .x_label_area_size(32)
-        .y_label_area_size(32)
+        .y_label_area_size(46)
         .build_cartesian_2d(-0.0..1.0, -0.0..1.0)?;
     chart
         .configure_mesh()
         // .disable_mesh()
+        .x_desc("p-value")
+        .y_desc("% lattices with percolating clusters")
         .draw()?;
 
     chart.draw_series(LineSeries::new(
@@ -183,11 +252,19 @@ fn draw_lattice(path: &str, caption: &str, lattice: &Lattice) -> Result<(), Box<
         // .disable_mesh()
         .draw()?;
 
-    chart.draw_series(lattice.grid.iter().enumerate()
-        .flat_map(|(i, row)| row.iter().enumerate()
-            .map(move|(j, &occupied)| if occupied { Some((i, j)) } else { None }))
-        .filter(Option::is_some).map(Option::unwrap)
-        .map(|(i,j)| Rectangle::new([(i, j), (i+1,j+1)], BLACK.filled())
-    ))?;
+    chart.draw_series(
+        lattice
+            .grid
+            .iter()
+            .enumerate()
+            .flat_map(|(i, row)| {
+                row.iter()
+                    .enumerate()
+                    .map(move |(j, &occupied)| if occupied { Some((i, j)) } else { None })
+            })
+            .filter(Option::is_some)
+            .map(Option::unwrap)
+            .map(|(i, j)| Rectangle::new([(i, j), (i + 1, j + 1)], BLACK.filled())),
+    )?;
     Ok(())
 }

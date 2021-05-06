@@ -71,12 +71,12 @@ impl NearestNeighborMap {
 
     pub fn print_latex(&self, to_file: &str) -> Result<(), Box<dyn Error>> {
         let mut of = File::create(to_file)?;
-        of.write(TEX_PREFIX.as_ref())?;
-        of.write("\\begin{tabular}{c c l}".as_ref())?;
-        of.write("Site Index & Number of Neighbors & Neighbor List \\\\\n".as_ref())?;
+        of.write_all(TEX_PREFIX.as_ref())?;
+        of.write_all("\\begin{tabular}{c c l}".as_ref())?;
+        of.write_all("Site Index & Number of Neighbors & Neighbor List \\\\\n".as_ref())?;
         for i in 0..self.neighbors.len() {
             let site_neighbors: &Vec<usize> = &self.neighbors[i];
-            of.write(
+            of.write_all(
                 format!(
                     "{} & {} & {} \\\\\n",
                     i,
@@ -90,17 +90,17 @@ impl NearestNeighborMap {
                 .as_ref(),
             )?;
         }
-        of.write("\\end{tabular}".as_ref())?;
-        of.write(TEX_SUFFIX.as_ref())?;
+        of.write_all("\\end{tabular}".as_ref())?;
+        of.write_all(TEX_SUFFIX.as_ref())?;
         Ok(())
     }
 
     pub fn print_csv(&self, to_file: &str) -> Result<(), Box<dyn Error>> {
         let mut of = File::create(to_file)?;
-        of.write("Site Index, Number of Neighbors, Neighbor List\n".as_ref())?;
+        of.write_all("Site Index, Number of Neighbors, Neighbor List\n".as_ref())?;
         for i in 0..self.neighbors.len() {
             let site_neighbors: &Vec<usize> = &self.neighbors[i];
-            of.write(
+            of.write_all(
                 format!(
                     "{}, {}, {}\n",
                     i,
@@ -129,7 +129,7 @@ impl NearestNeighborMap {
             let site_i = sites[i];
             let first_i = &first_neighbors.neighbors[i];
             let second_i = &second_neighbors.neighbors[i];
-            of.write(
+            of.write_all(
                 format!(
                     "{} {} {} {} {} {} {} {}\n",
                     i,
@@ -180,14 +180,14 @@ impl AdjacencyMatrix {
         let mut of = File::create(to_file)?;
         for i in 0..self.m.len() {
             let row = &self.m[i];
-            of.write(
+            of.write_all(
                 row.iter()
                     .map(|&v| v.to_string())
                     .collect::<Vec<String>>()
                     .join(", ")
                     .as_ref(),
             )?;
-            of.write("\n".as_ref())?;
+            of.write_all("\n".as_ref())?;
         }
         Ok(())
     }

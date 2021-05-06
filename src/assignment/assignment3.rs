@@ -25,7 +25,7 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     for (num_iter, color) in vec![(100, CYAN), (1000, GREEN), (10_000, RED)] {
         accept_rates.push((
             (2..=10)
-                .map(|dim| (dim, part_3b_nd(&mut uni, dim, num_iter).unwrap()))
+                .map(|dim| (dim, part_3b_nd(&mut uni, dim, num_iter)))
                 .map(|(dim, num_accepted)| (dim, num_accepted as f64 / num_iter as f64))
                 .collect(),
             format!("n = {}", num_iter),
@@ -36,7 +36,7 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     // Compute accept rates for the efficient method; expecting 100% accept rate
     accept_rates.push((
         (2..=10)
-            .map(|dim| (dim, part_3c(&mut uni, &mut gau, dim, 10_000).unwrap()))
+            .map(|dim| (dim, part_3c(&mut uni, &mut gau, dim, 10_000)))
             .map(|(dim, num_accepted)| (dim, num_accepted as f64 / 10_000.0))
             .collect(),
         "Efficient".to_owned(),
@@ -156,13 +156,13 @@ fn draw_2d_and_3d_efficient(uni: &mut Uniform701, n_iter: usize) -> Result<(), B
     Ok(())
 }
 
-fn part_3b_nd(uni: &mut Uniform701, dim: usize, n_iter: usize) -> Result<usize, Box<dyn Error>> {
+fn part_3b_nd(uni: &mut Uniform701, dim: usize, n_iter: usize) -> usize {
     log::info!("Doing part 3b for {}-dimensions", dim);
 
-    Ok((0..n_iter)
+    (0..n_iter)
         .map(|_| RandomVec::naive_scaled(uni, dim, 2.0, -1.0))
         .filter(|v| v.is_in_sphere(1.0))
-        .count())
+        .count()
 }
 
 fn part_3c(
@@ -170,17 +170,17 @@ fn part_3c(
     gaussian: &mut BoxMullerGaussian701,
     dim: usize,
     n_iter: usize,
-) -> Result<usize, Box<dyn Error>> {
+) -> usize {
     log::info!("Doing part 3c for {}-dimensions", dim);
 
-    Ok((2..n_iter)
+    (2..n_iter)
         .map(|_| RandomVec::efficient_scaled(uni, gaussian, dim, 2.0, -1.0))
         .filter(|v| v.is_in_sphere(1.0))
-        .count())
+        .count()
 }
 
 /// Draw a scatter plot for the supplied 2-dimensional points
-fn scatter_2d<'a>(
+fn scatter_2d(
     path: &str,
     caption: &str,
     x_range: Range<f64>,
@@ -195,7 +195,7 @@ fn scatter_2d<'a>(
         .margin(32)
         .x_label_area_size(32)
         .y_label_area_size(32)
-        .build_cartesian_2d(x_range.to_owned(), y_range.to_owned())?;
+        .build_cartesian_2d(x_range, y_range)?;
     chart.configure_mesh().disable_mesh().draw()?;
 
     chart.draw_series(
@@ -224,7 +224,7 @@ fn scatter_3d(
         .margin(32)
         .x_label_area_size(32)
         .y_label_area_size(32)
-        .build_cartesian_3d(x_range.to_owned(), y_range.to_owned(), z_range.to_owned())?;
+        .build_cartesian_3d(x_range, y_range, z_range)?;
     chart.configure_axes().draw()?;
 
     chart.draw_series(

@@ -72,6 +72,6 @@ fn ensure_output_dirs_exist() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn scratch() -> Result<(), Box<dyn Error>> {
-    Ok(())
-}
+// fn scratch() -> Result<(), Box<dyn Error>> {
+//     Ok(())
+// }

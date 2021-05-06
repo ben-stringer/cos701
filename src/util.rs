@@ -52,6 +52,7 @@ pub fn gamma(n: usize) -> f64 {
 
 /// Calculate a circle passing through points a, b, and c.
 /// Return the center of the circle and the radius.
+#[allow(clippy::many_single_char_names)]
 pub fn circle_through(p1: Point2d, p2: Point2d, p3: Point2d) -> (Point2d, f64) {
     let (x1, y1) = p1.into();
     let (x2, y2) = p2.into();

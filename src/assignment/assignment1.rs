@@ -198,6 +198,8 @@ fn part_1d(inv: &mut InverseTransform701) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+type OptionalCurve<'a, 'b> = Option<(Box<dyn Fn(&f64) -> (f64, f64) + 'a>, &'b str)>;
+
 /// Plot a histogram for the supplied bins where the key represents the x-axis and the value
 /// represents the y-axis.  Optionally take a function to plot a curve.
 fn plot_histogram<'a>(
@@ -207,7 +209,7 @@ fn plot_histogram<'a>(
     x_step: f64,
     max_y: f64,
     bins: BTreeMap<String, i32>,
-    optional_curve: Option<(Box<dyn Fn(&f64) -> (f64, f64) + 'a>, &str)>,
+    optional_curve: OptionalCurve,
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting '{}'.", caption);
 
@@ -235,7 +237,6 @@ fn plot_histogram<'a>(
         chart
             .draw_secondary_series(LineSeries::new(
                 x_range
-                    .to_owned()
                     .step(x_step)
                     .key_points(1_000_000)
                     .iter()

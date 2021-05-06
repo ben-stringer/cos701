@@ -30,8 +30,8 @@ impl Point2d {
     }
 
     pub fn shift_by(mut self, that: &Self) -> Self {
-        self.x = self.x + that.x;
-        self.y = self.y + that.y;
+        self.x += that.x;
+        self.y += that.y;
         self
     }
 }

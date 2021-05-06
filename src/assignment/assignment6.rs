@@ -1,6 +1,5 @@
 use ordered_float::OrderedFloat;
 use plotters::prelude::*;
-use voronoi;
 
 use crate::data::delaunay::dealunay_2d;
 use crate::data::line::Line2d;
@@ -127,12 +126,9 @@ fn use_saved_sites() -> Vec<Point2d> {
     let fin = BufReader::new(File::open("output/scratch/a6_pts.txt").unwrap());
 
     fin.lines()
-        .filter_map(|maybe_line| {
-            if maybe_line.is_err() {
-                None
-            } else {
-                let line = maybe_line.unwrap();
-                let parts = line.split(" ").collect::<Vec<&str>>();
+        .filter_map(|maybe_line| match maybe_line {
+            Ok(line) => {
+                let parts = line.split(' ').collect::<Vec<&str>>();
                 Some(
                     (
                         f64::from_str(parts[0]).unwrap(),
@@ -141,6 +137,7 @@ fn use_saved_sites() -> Vec<Point2d> {
                         .into(),
                 )
             }
+            Err(_) => None,
         })
         .collect::<Vec<Point2d>>()
 }

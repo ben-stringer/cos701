@@ -149,8 +149,8 @@ impl Line2d {
             dst: (self.dst.x - self.src.x, self.dst.y - self.src.y).into(),
         };
         let len = v.length();
-        v.dst.x = v.dst.x / len;
-        v.dst.y = v.dst.y / len;
+        v.dst.x /= len;
+        v.dst.y /= len;
         self.dst = (v.dst.x + self.src.x, v.dst.y + self.src.y).into();
         self
     }

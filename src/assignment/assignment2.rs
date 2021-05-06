@@ -71,7 +71,7 @@ fn part_2c(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
 }
 
 /// Draw a scatter plot for the supplied 2-dimensional points
-fn scatter_2d<'a>(
+fn scatter_2d(
     path: &str,
     caption: &str,
     x_range: Range<f64>,
@@ -86,7 +86,7 @@ fn scatter_2d<'a>(
         .margin(32)
         .x_label_area_size(32)
         .y_label_area_size(32)
-        .build_cartesian_2d(x_range.to_owned(), y_range.to_owned())?;
+        .build_cartesian_2d(x_range, y_range)?;
     chart.configure_mesh().disable_mesh().draw()?;
 
     chart.draw_series(
@@ -115,7 +115,7 @@ fn scatter_3d(
         .margin(32)
         .x_label_area_size(32)
         .y_label_area_size(32)
-        .build_cartesian_3d(x_range.to_owned(), y_range.to_owned(), z_range.to_owned())?;
+        .build_cartesian_3d(x_range, y_range, z_range)?;
     chart.configure_axes().draw()?;
 
     chart.draw_series(

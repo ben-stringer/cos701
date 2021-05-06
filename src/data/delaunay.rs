@@ -21,9 +21,10 @@ pub fn dealunay_2d(sites: &Vec<Point2d>, r_cutoff: f64, bidirectional: bool) -> 
                     continue;
                 }
                 let (center, r) = circle_through(sites[i], sites[j], sites[k]);
-                if let None = (0..n_sites)
+                if (0..n_sites)
                     .filter(|&v| !(v == i || v == j || v == k))
                     .find(|&v| point_in_circle(sites[v], center, r))
+                    .is_none()
                 {
                     lines[i].push(j);
                     lines[i].push(k);

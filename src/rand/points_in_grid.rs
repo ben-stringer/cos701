@@ -29,9 +29,10 @@ pub fn gen_spaced_points_in_box(
                 x: uni.next() * box_len,
                 y: uni.next() * box_len,
             };
-            if let None = accepted
+            if accepted
                 .iter()
                 .find(|&&point| point.distance_to(&next) < r_min)
+                .is_none()
             {
                 accepted.push(next);
                 rejected = false;
@@ -59,9 +60,10 @@ pub fn gen_points_in_cube(
                 y: uni.next() * cube_len,
                 z: uni.next() * cube_len,
             };
-            if let None = accepted
+            if accepted
                 .iter()
                 .find(|&&point| point.distance_to(&next) < r_min)
+                .is_none()
             {
                 accepted.push(next);
                 rejected = false;

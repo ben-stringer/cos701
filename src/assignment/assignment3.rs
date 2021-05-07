@@ -61,7 +61,7 @@ pub fn do_assignment_3() -> Result<(), Box<dyn Error>> {
     plot_accept_rates(
         "output/assignment3/3b_3c_accept_rates.png",
         "Accept rates for d = 2..10",
-        accept_rates,
+        &accept_rates,
     )?;
 
     Ok(())
@@ -74,7 +74,7 @@ fn draw_2d_and_3d_naive(uni: &mut Uniform701, n_iter: usize) -> Result<(), Box<d
         "Naive, sphere r = 1, dimension = 2",
         -1.0..1.0,
         -1.0..1.0,
-        (0..n_iter)
+        &(0..n_iter)
             .map(|_| RandomVec::naive_scaled(uni, 2, 2.0, -1.0))
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
@@ -94,7 +94,7 @@ fn draw_2d_and_3d_naive(uni: &mut Uniform701, n_iter: usize) -> Result<(), Box<d
         -1.0..1.0,
         -1.0..1.0,
         -1.0..1.0,
-        (0..n_iter)
+        &(0..n_iter)
             .map(|_| RandomVec::naive_scaled(uni, 3, 2.0, -1.0))
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
@@ -119,7 +119,7 @@ fn draw_2d_and_3d_efficient(uni: &mut Uniform701, n_iter: usize) -> Result<(), B
         "Efficient sphere r = 1, dimension = 2",
         -1.0..1.0,
         -1.0..1.0,
-        (0..n_iter)
+        &(0..n_iter)
             .map(|_| RandomVec::efficient_scaled(uni, &mut gaussian, 2, 2.0, -1.0))
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
@@ -139,7 +139,7 @@ fn draw_2d_and_3d_efficient(uni: &mut Uniform701, n_iter: usize) -> Result<(), B
         -1.0..1.0,
         -1.0..1.0,
         -1.0..1.0,
-        (0..n_iter)
+        &(0..n_iter)
             .map(|_| RandomVec::efficient_scaled(uni, &mut gaussian, 3, 2.0, -1.0))
             .filter(|v| v.is_in_sphere(1.0))
             .map(|v| {
@@ -185,7 +185,7 @@ fn scatter_2d(
     caption: &str,
     x_range: Range<f64>,
     y_range: Range<f64>,
-    points: Vec<Point2d>,
+    points: &[Point2d],
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (900, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -214,7 +214,7 @@ fn scatter_3d(
     x_range: Range<f64>,
     y_range: Range<f64>,
     z_range: Range<f64>,
-    points: Vec<Point3d>,
+    points: &[Point3d],
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (900, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -245,7 +245,7 @@ fn animate_3d(
     x_range: Range<f64>,
     y_range: Range<f64>,
     z_range: Range<f64>,
-    points: Vec<Point3d>,
+    points: &[Point3d],
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::gif(path, (1440, 900), 1_000)?.into_drawing_area();
 
@@ -286,7 +286,7 @@ fn animate_3d(
 fn plot_accept_rates(
     path: &str,
     caption: &str,
-    to_plot: Vec<(BTreeMap<usize, f64>, String, RGBColor)>,
+    to_plot: &[(BTreeMap<usize, f64>, String, RGBColor)],
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting accept rates for parts 3a-3b.");
 
@@ -310,11 +310,11 @@ fn plot_accept_rates(
                 accept_rate
                     .iter()
                     .map(|entry| (*entry.0 as f64, (*entry.1 as f64))),
-                ShapeStyle::from(&color),
+                ShapeStyle::from(color),
             ))?
             .label(curve_label.to_owned())
             .legend(move |(x, y)| {
-                PathElement::new(vec![(x, y), (x + 20, y)], ShapeStyle::from(&color))
+                PathElement::new(vec![(x, y), (x + 20, y)], ShapeStyle::from(color))
             });
     }
 

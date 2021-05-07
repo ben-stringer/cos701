@@ -140,7 +140,7 @@ fn calculate_runtimes(uni: &mut Uniform701) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn calculate_spread(data: &mut Vec<Clusters>) -> (f64, f64, f64) {
+fn calculate_spread(data: &mut [Clusters]) -> (f64, f64, f64) {
     let n = data.len();
     let mut sizes: Vec<usize> = data
         .iter()
@@ -161,7 +161,7 @@ fn calculate_spread(data: &mut Vec<Clusters>) -> (f64, f64, f64) {
 fn plot_cluster_sizes(
     path: &str,
     caption: &str,
-    sizes: &Vec<(f64, (f64, f64, f64))>,
+    sizes: &[(f64, (f64, f64, f64))],
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting cluster size distribution");
 
@@ -201,7 +201,7 @@ fn plot_cluster_sizes(
 fn plot_percolating_cluster_rates(
     path: &str,
     caption: &str,
-    to_plot: &Vec<Vec<usize>>,
+    to_plot: &[Vec<usize>],
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting average number of percolating clusters");
 

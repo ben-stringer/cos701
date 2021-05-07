@@ -202,7 +202,7 @@ type OptionalCurve<'a, 'b> = Option<(Box<dyn Fn(&f64) -> (f64, f64) + 'a>, &'b s
 
 /// Plot a histogram for the supplied bins where the key represents the x-axis and the value
 /// represents the y-axis.  Optionally take a function to plot a curve.
-fn plot_histogram<'a>(
+fn plot_histogram(
     path: &str,
     caption: &str,
     x_range: Range<f64>,

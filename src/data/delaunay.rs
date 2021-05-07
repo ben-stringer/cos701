@@ -6,7 +6,7 @@ use crate::util::{circle_through, point_in_circle};
 /// neighbors to consider rather than considering the whole space.  Send `f64::MAX` if you
 /// want all points considered.  When `bidirectional` is false, any two points will be connected
 /// in one direction only, e.g., point i will contain j, but j will not contain i.
-pub fn dealunay_2d(sites: &Vec<Point2d>, r_cutoff: f64, bidirectional: bool) -> Vec<Vec<usize>> {
+pub fn dealunay_2d(sites: &[Point2d], r_cutoff: f64, bidirectional: bool) -> Vec<Vec<usize>> {
     let n_sites = sites.len();
 
     let mut lines = vec![vec![]; n_sites];
@@ -50,7 +50,7 @@ pub fn dealunay_2d(sites: &Vec<Point2d>, r_cutoff: f64, bidirectional: bool) -> 
     lines
 }
 
-pub fn to_lines_2d(triangulation: Vec<Vec<usize>>) -> Vec<(usize, usize)> {
+pub fn to_lines_2d(triangulation: &[Vec<usize>]) -> Vec<(usize, usize)> {
     let mut lines = triangulation
         .iter()
         .enumerate()

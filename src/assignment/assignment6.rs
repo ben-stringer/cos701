@@ -4,8 +4,8 @@ use plotters::prelude::*;
 use crate::data::delaunay::dealunay_2d;
 use crate::data::line::Line2d;
 use crate::data::point::Point2d;
+use crate::data::points_in_grid::gen_spaced_points_in_box;
 use crate::data::voronoi::voronoi_701;
-use crate::rand::points_in_grid::gen_spaced_points_in_box;
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
 use std::fs::File;
@@ -27,7 +27,7 @@ pub fn do_assignment_6() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
+fn do_part_a(sites: &[Point2d]) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part a");
 
     plot_voronoi_diagram(
@@ -58,13 +58,13 @@ fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
             let dy = dst.1;
             Line2d::from(((sx.0, sy.0), (dx.0, dy.0)))
         })
-        .collect(),
+        .collect::<Vec<Line2d>>(),
     )?;
 
     Ok(())
 }
 
-fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
+fn do_part_b(sites: &[Point2d]) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part b");
 
     let triangulation = dealunay_2d(sites, 4.0, false);
@@ -83,8 +83,8 @@ fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
 fn plot_voronoi_diagram(
     path: &str,
     caption: &str,
-    sites: &Vec<Point2d>,
-    lines: &Vec<Line2d>,
+    sites: &[Point2d],
+    lines: &[Line2d],
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting {}", &caption);
 

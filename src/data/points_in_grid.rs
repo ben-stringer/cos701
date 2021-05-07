@@ -79,7 +79,7 @@ pub fn gen_points_in_cube(
 /// For index `i`, the line will have the same start/end point.  This will be meaningless
 /// and will cause issues if used (e.g., calculating an angle), but is included to
 /// keep the indexes aligned.
-pub fn lines_from(i: usize, points: &Vec<Point2d>) -> Vec<Line2d> {
+pub fn lines_from(i: usize, points: &[Point2d]) -> Vec<Line2d> {
     let src = points[i];
     points
         .iter()

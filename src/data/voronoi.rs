@@ -1,7 +1,7 @@
 use crate::data::line::Line2d;
 use crate::data::point::Point2d;
 
-pub fn voronoi_701(sites: &Vec<Point2d>, delaunay: &Vec<Vec<usize>>) -> Vec<Line2d> {
+pub fn voronoi_701(sites: &[Point2d], delaunay: &[Vec<usize>]) -> Vec<Line2d> {
     let n_sites = sites.len();
 
     let mut ret = vec![];

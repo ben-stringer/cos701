@@ -10,7 +10,7 @@ pub(crate) struct NearestNeighborMap {
 }
 
 impl NearestNeighborMap {
-    pub fn first_2d(sites: &Vec<Point2d>, r_cutoff: f64) -> Self {
+    pub fn first_2d(sites: &[Point2d], r_cutoff: f64) -> Self {
         let n = sites.len();
         let mut neighbors = vec![vec![]; n];
 
@@ -28,7 +28,7 @@ impl NearestNeighborMap {
         Self { neighbors }
     }
 
-    pub fn first_3d(sites: &Vec<Point3d>, r_cutoff: f64) -> Self {
+    pub fn first_3d(sites: &[Point3d], r_cutoff: f64) -> Self {
         let n = sites.len();
         let mut neighbors = vec![vec![]; n];
 
@@ -118,7 +118,7 @@ impl NearestNeighborMap {
     }
 
     pub fn print_txt(
-        sites: &Vec<Point3d>,
+        sites: &[Point3d],
         first_neighbors: &NearestNeighborMap,
         second_neighbors: &NearestNeighborMap,
         to_file: &str,

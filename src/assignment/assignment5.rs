@@ -2,7 +2,7 @@ use plotters::prelude::*;
 
 use crate::data::delaunay::{dealunay_2d, to_lines_2d};
 use crate::data::point::Point2d;
-use crate::rand::points_in_grid::gen_spaced_points_in_box;
+use crate::data::points_in_grid::gen_spaced_points_in_box;
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
 
@@ -19,7 +19,7 @@ pub fn do_assignment_5() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
+fn do_part_a(sites: &[Point2d]) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part a");
 
     let wrapped_points = &sites
@@ -48,10 +48,10 @@ fn do_part_a(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
+fn do_part_b(sites: &[Point2d]) -> Result<(), Box<dyn Error>> {
     log::info!("Doing part b");
 
-    let lines = to_lines_2d(dealunay_2d(sites, 4.0, false));
+    let lines = to_lines_2d(&dealunay_2d(&sites, 4.0, false));
 
     plot_triangulation(
         "output/assignment5/part_5b.png",
@@ -66,8 +66,8 @@ fn do_part_b(sites: &Vec<Point2d>) -> Result<(), Box<dyn Error>> {
 fn plot_triangulation(
     path: &str,
     caption: &str,
-    sites: &Vec<Point2d>,
-    lines: &Vec<(usize, usize)>,
+    sites: &[Point2d],
+    lines: &[(usize, usize)],
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting {}", &caption);
 

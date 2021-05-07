@@ -82,32 +82,6 @@ impl Line2d {
             let y = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / d;
             Some(Point2d { x, y })
         }
-
-        // let a = self.slope();
-        // let b = that.slope();
-        // if a == b {
-        //     None
-        // } else {
-        //     let c = self.src.y - (a * self.src.x);
-        //     let d = that.src.y - (b * that.src.x);
-        //     if c == d {
-        //         None
-        //     } else if a.is_infinite() {
-        //         Some(Point2d {
-        //             x: self.src.x,
-        //             y: b * self.src.x + d,
-        //         })
-        //     } else if b.is_infinite() {
-        //         Some(Point2d {
-        //             x: that.src.x,
-        //             y: a * that.src.x + c,
-        //         })
-        //     } else {
-        //         let x = (d - c) / (a - b);
-        //         let y = b * x + d;
-        //         Some(Point2d { x, y })
-        //     }
-        // }
     }
 
     /// Return the angle formed between this line and a line starting at src and continuing in

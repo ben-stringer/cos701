@@ -1,7 +1,7 @@
 use plotters::prelude::*;
 
 use crate::data::point::{Point2d, Point3d};
-use crate::rand::points_in_grid::{
+use crate::data::points_in_grid::{
     gen_points_in_box, gen_points_in_cube, gen_spaced_points_in_box,
 };
 use crate::rand::uniform::Uniform701;
@@ -33,7 +33,7 @@ fn part_2a(uni: &mut Uniform701, n: usize) -> Result<(), Box<dyn Error>> {
         "Assignment 2a, L = 20, n = 500",
         0.0..L,
         0.0..L,
-        gen_points_in_box(uni, L, n),
+        &gen_points_in_box(uni, L, n),
     )?;
     Ok(())
 }
@@ -48,7 +48,7 @@ fn part_2b(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
         &format!("Assignment 2b, L = 20, n = {}, r_min = {}", n, r_min),
         0.0..L,
         0.0..L,
-        gen_spaced_points_in_box(uni, L, n, r_min),
+        &gen_spaced_points_in_box(uni, L, n, r_min),
     )?;
     Ok(())
 }
@@ -65,7 +65,7 @@ fn part_2c(uni: &mut Uniform701, n: usize, r_min: f64) -> Result<(), Box<dyn Err
         0.0..L,
         0.0..L,
         0.0..L,
-        gen_points_in_cube(uni, L, n, r_min),
+        &gen_points_in_cube(uni, L, n, r_min),
     )?;
     Ok(())
 }
@@ -76,7 +76,7 @@ fn scatter_2d(
     caption: &str,
     x_range: Range<f64>,
     y_range: Range<f64>,
-    points: Vec<Point2d>,
+    points: &[Point2d],
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -105,7 +105,7 @@ fn scatter_3d(
     x_range: Range<f64>,
     y_range: Range<f64>,
     z_range: Range<f64>,
-    points: Vec<Point3d>,
+    points: &[Point3d],
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::new(path, (1440, 900)).into_drawing_area();
     root.fill(&WHITE)?;
@@ -136,7 +136,7 @@ fn animated_3d(
     x_range: Range<f64>,
     y_range: Range<f64>,
     z_range: Range<f64>,
-    points: Vec<Point3d>,
+    points: &[Point3d],
 ) -> Result<(), Box<dyn Error>> {
     let root = BitMapBackend::gif(path, (1440, 900), 1_000)?.into_drawing_area();
 
@@ -163,7 +163,6 @@ fn animated_3d(
 
         chart.draw_series(
             points
-                .to_owned()
                 .iter()
                 .map(|&coord| Circle::new(coord.into(), 2, RED.filled())),
         )?;

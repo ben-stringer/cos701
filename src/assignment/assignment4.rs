@@ -1,6 +1,6 @@
 use crate::data::neighbors::{AdjacencyMatrix, NearestNeighborMap};
 use crate::data::point::Point3d;
-use crate::rand::points_in_grid::gen_points_in_cube;
+use crate::data::points_in_grid::gen_points_in_cube;
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
 
@@ -28,7 +28,7 @@ pub fn do_assignment_4() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn part_4a(sites: &Vec<Point3d>) -> Result<NearestNeighborMap, Box<dyn Error>> {
+fn part_4a(sites: &[Point3d]) -> Result<NearestNeighborMap, Box<dyn Error>> {
     log::info!("Doing part a");
 
     let nn_map = NearestNeighborMap::first_3d(sites, 3.0);

@@ -2,7 +2,7 @@ use plotters::prelude::*;
 
 use crate::data::line::Line2d;
 use crate::data::point::{Point2d, ORIGIN_2D};
-use crate::rand::points_in_grid::gen_points_in_box;
+use crate::data::points_in_grid::gen_points_in_box;
 use crate::rand::uniform::Uniform701;
 use std::error::Error;
 use std::time::Instant;
@@ -19,7 +19,11 @@ pub fn do_assignment_7() -> Result<(), Box<dyn Error>> {
         .map(|n| gen_points_in_box(&mut uni, BOX_LEN, n))
         .collect();
 
-    let hulls: Vec<(u128, Vec<Line2d>)> = grids.iter_mut().map(compute_convex_hull).collect();
+    let hulls: Vec<(u128, Vec<Line2d>)> = grids
+        .iter_mut()
+        .map(Vec::as_mut_slice)
+        .map(compute_convex_hull)
+        .collect();
 
     hulls.iter().enumerate().try_for_each(|(i, (time, hull))| {
         let n = 500 + i * 500;
@@ -31,13 +35,16 @@ pub fn do_assignment_7() -> Result<(), Box<dyn Error>> {
         )
     })?;
 
-    let from_lib: Vec<(u128, Vec<Line2d>)> =
-        grids.iter().map(compute_convex_hull_from_library).collect();
+    let from_lib: Vec<(u128, Vec<Line2d>)> = grids
+        .iter()
+        .map(Vec::as_slice)
+        .map(compute_convex_hull_from_library)
+        .collect();
 
     plot_runtimes(
         "output/assignment7/runtimes.png",
         "Convex Hull Runtimes",
-        hulls
+        &hulls
             .iter()
             .map(|&(time, _)| time)
             .zip(from_lib)
@@ -48,7 +55,7 @@ pub fn do_assignment_7() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-pub fn compute_convex_hull_from_library(grid: &Vec<Point2d>) -> (u128, Vec<Line2d>) {
+pub fn compute_convex_hull_from_library(grid: &[Point2d]) -> (u128, Vec<Line2d>) {
     let now = Instant::now();
 
     let wrapped_points = &grid
@@ -67,7 +74,7 @@ pub fn compute_convex_hull_from_library(grid: &Vec<Point2d>) -> (u128, Vec<Line2
     (elapsed, hull)
 }
 
-pub fn compute_convex_hull(grid: &mut Vec<Point2d>) -> (u128, Vec<Line2d>) {
+pub fn compute_convex_hull(grid: &mut [Point2d]) -> (u128, Vec<Line2d>) {
     let now = Instant::now();
 
     // Sort by magnitude so that element 0 is in the bottom-left
@@ -125,8 +132,8 @@ pub fn compute_convex_hull(grid: &mut Vec<Point2d>) -> (u128, Vec<Line2d>) {
 pub fn plot_hull(
     path: &str,
     caption: &str,
-    sites: &Vec<Point2d>,
-    hull: &Vec<Line2d>,
+    sites: &[Point2d],
+    hull: &[Line2d],
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting '{}'", caption);
 
@@ -162,7 +169,7 @@ pub fn plot_hull(
 fn plot_runtimes(
     path: &str,
     caption: &str,
-    to_plot: Vec<(u128, u128)>,
+    to_plot: &[(u128, u128)],
 ) -> Result<(), Box<dyn Error>> {
     log::info!("Plotting runtimes");
 

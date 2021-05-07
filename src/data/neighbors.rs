@@ -50,8 +50,7 @@ impl NearestNeighborMap {
         let n = first_neighbors.neighbors.len();
         let mut second_neighbors = vec![vec![]; n];
 
-        for i in 0..n {
-            let first_neighbors_i = &first_neighbors.neighbors[i];
+        for (i, first_neighbors_i) in first_neighbors.neighbors.iter().enumerate() {
             for j in first_neighbors_i {
                 for k in &first_neighbors.neighbors[*j] {
                     if !(i == *k
@@ -125,8 +124,7 @@ impl NearestNeighborMap {
     ) -> Result<(), Box<dyn Error>> {
         let mut of = File::create(to_file)?;
 
-        for i in 0..sites.len() {
-            let site_i = sites[i];
+        for (i, site_i) in sites.iter().enumerate() {
             let first_i = &first_neighbors.neighbors[i];
             let second_i = &second_neighbors.neighbors[i];
             of.write_all(
@@ -166,8 +164,7 @@ impl AdjacencyMatrix {
         let n = nn_map.neighbors.len();
         let mut m = vec![vec![0; n]; n];
 
-        for i in 0..n {
-            let i_neighbors = &nn_map.neighbors[i];
+        for (i, i_neighbors) in nn_map.neighbors.iter().enumerate() {
             for j in i_neighbors {
                 m[i][*j] = 1;
             }

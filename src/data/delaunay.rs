@@ -41,8 +41,9 @@ pub fn dealunay_2d(sites: &[Point2d], r_cutoff: f64, bidirectional: bool) -> Vec
 
     if bidirectional {
         let clone = lines.clone();
-        for i in 0..n_sites {
-            for &j in &clone[i] {
+        // for i in 0..n_sites {
+        for (i, opposites) in clone.iter().enumerate() {
+            for &j in opposites {
                 lines[j].push(i);
             }
         }
